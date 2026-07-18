@@ -24,7 +24,7 @@ allow-direct-references = true
 packages = ["app"]
 
 [tool.uv.sources]
-apiforge = { path = "/Users/mac/apiforge" }
+apiforge = { git = "https://github.com/mlenkov/apiforge.git" }
 
 [build-system]
 requires = ["hatchling"]
