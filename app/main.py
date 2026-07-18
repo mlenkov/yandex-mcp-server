@@ -1,4 +1,4 @@
-from mcp.server.fastmcp import FastMCP
+from mcp.server.fastmcp import FastMCP, Context
 
 from app.config import settings
 from app import models  # noqa: F401 – ensure models are loaded for Alembic
@@ -21,13 +21,13 @@ async def ping() -> str:
 
 
 @mcp.tool()
-async def list_yandex_accounts_tool(ctx: mcp.Context) -> list[dict]:
+async def list_yandex_accounts_tool(ctx: Context) -> list[dict]:
     return await list_yandex_accounts(ctx)
 
 
 @mcp.tool()
 async def get_direct_campaigns_tool(
-    ctx: mcp.Context,
+    ctx: Context,
     account_id: int | None = None,
 ) -> dict:
     return await get_direct_campaigns(ctx, account_id)
@@ -35,7 +35,7 @@ async def get_direct_campaigns_tool(
 
 @mcp.tool()
 async def get_metrika_counters_tool(
-    ctx: mcp.Context,
+    ctx: Context,
     account_id: int | None = None,
 ) -> dict:
     return await get_metrika_counters(ctx, account_id)
@@ -43,7 +43,7 @@ async def get_metrika_counters_tool(
 
 @mcp.tool()
 async def get_webmaster_hosts_tool(
-    ctx: mcp.Context,
+    ctx: Context,
     account_id: int | None = None,
 ) -> dict:
     return await get_webmaster_hosts(ctx, account_id)
@@ -51,7 +51,7 @@ async def get_webmaster_hosts_tool(
 
 @mcp.tool()
 async def get_audience_segments_tool(
-    ctx: mcp.Context,
+    ctx: Context,
     account_id: int | None = None,
 ) -> dict:
     return await get_audience_segments(ctx, account_id)
@@ -59,7 +59,7 @@ async def get_audience_segments_tool(
 
 @mcp.tool()
 async def get_admetrica_campaigns_tool(
-    ctx: mcp.Context,
+    ctx: Context,
     account_id: int | None = None,
 ) -> dict:
     return await get_admetrica_campaigns(ctx, account_id)
