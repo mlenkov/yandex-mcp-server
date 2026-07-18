@@ -12,6 +12,7 @@ from app.tools.admetrica import get_admetrica_campaigns
 mcp = FastMCP(
     "Yandex MCP Server",
     instructions="MCP server for Yandex API services: Direct, Metrika, Audience, AdMetrica, Webmaster",
+    host="0.0.0.0",
 )
 
 

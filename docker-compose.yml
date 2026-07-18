@@ -14,3 +14,11 @@ services:
     labels:
       project: "mais"
       service: "yandex-mcp"
+    networks:
+      - default
+      - mais-bifrost-net
+
+networks:
+  mais-bifrost-net:
+    external: true
+    name: mais-bifrost-net
