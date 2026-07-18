@@ -127,6 +127,19 @@ curl -X POST http://localhost:8000/mcp \
   -d '{"jsonrpc":"2.0","id":1,"method":"tools/list"}'
 ```
 
+### Seed-данные для тестирования
+
+Наполни SQLite тестовым пользователем с аккаунтом Директа (токен истёк вчера — триггернет auto-refresh):
+
+```bash
+uv run python -m scripts.seed
+```
+
+После этого в Inspector при вызове `get_direct_campaigns`:
+1. Сервер получит 401 от Яндекса
+2. Попробует обновить токен через `refresh_account_token`
+3. Вернёт структурированную ошибку с `"yandex_api_error": true`
+
 ## Структура проекта
 
 ```
