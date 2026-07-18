@@ -1,0 +1,893 @@
+{
+  "base_url": "https://api-audience.yandex.ru/v2/management",
+  "auth": {
+    "token": "${YANDEX_AUDIENCE_TOKEN}"
+  },
+  "default_headers": {
+    "Content-Type": "application/json"
+  },
+  "resources": {
+    "segments": {
+      "path": "/segments",
+      "method": "GET",
+      "description": "Получение списка сегментов",
+      "parameters": {
+        "offset": {
+          "type": "integer",
+          "required": false,
+          "description": "Смещение"
+        },
+        "limit": {
+          "type": "integer",
+          "required": false,
+          "description": "Количество сегментов на странице"
+        },
+        "name": {
+          "type": "string",
+          "required": false,
+          "description": "Фильтр по названию сегмента"
+        }
+      }
+    },
+    "segment": {
+      "path": "/segments/{segment_id}",
+      "method": "GET",
+      "description": "Получение информации о сегменте",
+      "parameters": {
+        "segment_id": {
+          "type": "integer",
+          "required": true,
+          "description": "Идентификатор сегмента"
+        }
+      }
+    },
+    "segment_create": {
+      "path": "/segments",
+      "method": "POST",
+      "description": "Создание сегмента",
+      "parameters": {
+        "segment": {
+          "type": "object",
+          "required": true,
+          "description": "Параметры сегмента",
+          "properties": {
+            "name": {
+              "type": "string",
+              "required": true,
+              "description": "Название сегмента"
+            },
+            "category_id": {
+              "type": "integer",
+              "required": false,
+              "description": "Идентификатор категории"
+            },
+            "passport_user_id": {
+              "type": "integer",
+              "required": false,
+              "description": "Идентификатор пользователя Яндекса"
+            },
+            "is_default": {
+              "type": "boolean",
+              "required": false,
+              "description": "Является ли сегментом по умолчанию"
+            },
+            "lifetime": {
+              "type": "integer",
+              "required": false,
+              "description": "Время жизни сегмента в днях"
+            },
+            "data": {
+              "type": "string",
+              "required": false,
+              "description": "Данные сегмента"
+            },
+            "kind": {
+              "type": "string",
+              "required": false,
+              "description": "Тип сегмента",
+              "enum": ["uploaded_file", "metrika_segment", "lookalike", "mobile_operator", "retargeting", "combined", "crm"]
+            },
+            "conditions": {
+              "type": "array",
+              "required": false,
+              "description": "Условия сегмента"
+            }
+          }
+        }
+      }
+    },
+    "segment_update": {
+      "path": "/segments/{segment_id}",
+      "method": "PUT",
+      "description": "Изменение сегмента",
+      "parameters": {
+        "segment_id": {
+          "type": "integer",
+          "required": true,
+          "description": "Идентификатор сегмента"
+        },
+        "segment": {
+          "type": "object",
+          "required": true,
+          "description": "Параметры сегмента для изменения"
+        }
+      }
+    },
+    "segment_delete": {
+      "path": "/segments/{segment_id}",
+      "method": "DELETE",
+      "description": "Удаление сегмента",
+      "parameters": {
+        "segment_id": {
+          "type": "integer",
+          "required": true,
+          "description": "Идентификатор сегмента"
+        }
+      }
+    },
+    "segment_upload": {
+      "path": "/segments/{segment_id}/upload",
+      "method": "POST",
+      "description": "Загрузка данных в сегмент",
+      "parameters": {
+        "segment_id": {
+          "type": "integer",
+          "required": true,
+          "description": "Идентификатор сегмента"
+        },
+        "data": {
+          "type": "string",
+          "required": true,
+          "description": "Данные для загрузки"
+        }
+      }
+    },
+    "segment_upload_check": {
+      "path": "/segments/{segment_id}/upload/check",
+      "method": "GET",
+      "description": "Проверка статуса загрузки",
+      "parameters": {
+        "segment_id": {
+          "type": "integer",
+          "required": true,
+          "description": "Идентификатор сегмента"
+        }
+      }
+    },
+    "segment_update_upload": {
+      "path": "/segments/{segment_id}/update_upload",
+      "method": "POST",
+      "description": "Обновление данных в сегменте",
+      "parameters": {
+        "segment_id": {
+          "type": "integer",
+          "required": true,
+          "description": "Идентификатор сегмента"
+        },
+        "data": {
+          "type": "string",
+          "required": true,
+          "description": "Данные для обновления"
+        }
+      }
+    },
+    "segment_reach": {
+      "path": "/segments/{segment_id}/reach",
+      "method": "GET",
+      "description": "Получение охвата сегмента",
+      "parameters": {
+        "segment_id": {
+          "type": "integer",
+          "required": true,
+          "description": "Идентификатор сегмента"
+        },
+        "date": {
+          "type": "string",
+          "required": false,
+          "description": "Дата для оценки охвата"
+        }
+      }
+    },
+    "segment_logs": {
+      "path": "/segments/{segment_id}/logs",
+      "method": "GET",
+      "description": "Получение логов загрузки",
+      "parameters": {
+        "segment_id": {
+          "type": "integer",
+          "required": true,
+          "description": "Идентификатор сегмента"
+        }
+      }
+    },
+    "segment_status": {
+      "path": "/segments/{segment_id}/status",
+      "method": "GET",
+      "description": "Получение статуса сегмента",
+      "parameters": {
+        "segment_id": {
+          "type": "integer",
+          "required": true,
+          "description": "Идентификатор сегмента"
+        }
+      }
+    },
+    "segment_progress": {
+      "path": "/segments/{segment_id}/progress",
+      "method": "GET",
+      "description": "Получение прогресса обработки сегмента",
+      "parameters": {
+        "segment_id": {
+          "type": "integer",
+          "required": true,
+          "description": "Идентификатор сегмента"
+        }
+      }
+    },
+    "permissions": {
+      "path": "/segments/{segment_id}/permissions",
+      "method": "GET",
+      "description": "Получение списка разрешений на сегмент",
+      "parameters": {
+        "segment_id": {
+          "type": "integer",
+          "required": true,
+          "description": "Идентификатор сегмента"
+        }
+      }
+    },
+    "permission_create": {
+      "path": "/segments/{segment_id}/permissions",
+      "method": "POST",
+      "description": "Создание разрешения на сегмент",
+      "parameters": {
+        "segment_id": {
+          "type": "integer",
+          "required": true,
+          "description": "Идентификатор сегмента"
+        },
+        "permission": {
+          "type": "object",
+          "required": true,
+          "description": "Параметры разрешения",
+          "properties": {
+            "passport_user_id": {
+              "type": "integer",
+              "required": true,
+              "description": "Идентификатор пользователя Яндекса"
+            },
+            "role": {
+              "type": "string",
+              "required": true,
+              "description": "Роль пользователя",
+              "enum": ["owner", "editor", "viewer"]
+            }
+          }
+        }
+      }
+    },
+    "permission_delete": {
+      "path": "/segments/{segment_id}/permissions/{user_id}",
+      "method": "DELETE",
+      "description": "Удаление разрешения на сегмент",
+      "parameters": {
+        "segment_id": {
+          "type": "integer",
+          "required": true,
+          "description": "Идентификатор сегмента"
+        },
+        "user_id": {
+          "type": "integer",
+          "required": true,
+          "description": "Идентификатор пользователя"
+        }
+      }
+    },
+    "accounts": {
+      "path": "/accounts",
+      "method": "GET",
+      "description": "Получение списка аккаунтов"
+    },
+    "representatives": {
+      "path": "/accounts/{account_id}/representatives",
+      "method": "GET",
+      "description": "Получение списка представителей аккаунта",
+      "parameters": {
+        "account_id": {
+          "type": "integer",
+          "required": true,
+          "description": "Идентификатор аккаунта"
+        }
+      }
+    },
+    "representative_create": {
+      "path": "/accounts/{account_id}/representatives",
+      "method": "POST",
+      "description": "Создание представителя аккаунта",
+      "parameters": {
+        "account_id": {
+          "type": "integer",
+          "required": true,
+          "description": "Идентификатор аккаунта"
+        },
+        "representative": {
+          "type": "object",
+          "required": true,
+          "description": "Параметры представителя",
+          "properties": {
+            "passport_user_id": {
+              "type": "integer",
+              "required": true,
+              "description": "Идентификатор пользователя Яндекса"
+            },
+            "role": {
+              "type": "string",
+              "required": true,
+              "description": "Роль представителя",
+              "enum": ["admin", "operator"]
+            }
+          }
+        }
+      }
+    },
+    "representative_update": {
+      "path": "/accounts/{account_id}/representatives/{user_id}",
+      "method": "PUT",
+      "description": "Изменение представителя аккаунта",
+      "parameters": {
+        "account_id": {
+          "type": "integer",
+          "required": true,
+          "description": "Идентификатор аккаунта"
+        },
+        "user_id": {
+          "type": "integer",
+          "required": true,
+          "description": "Идентификатор пользователя"
+        },
+        "representative": {
+          "type": "object",
+          "required": true,
+          "description": "Параметры представителя для изменения"
+        }
+      }
+    },
+    "representative_delete": {
+      "path": "/accounts/{account_id}/representatives/{user_id}",
+      "method": "DELETE",
+      "description": "Удаление представителя аккаунта",
+      "parameters": {
+        "account_id": {
+          "type": "integer",
+          "required": true,
+          "description": "Идентификатор аккаунта"
+        },
+        "user_id": {
+          "type": "integer",
+          "required": true,
+          "description": "Идентификатор пользователя"
+        }
+      }
+    },
+    "pixels": {
+      "path": "/pixels",
+      "method": "GET",
+      "description": "Получение списка пикселей",
+      "parameters": {
+        "account_id": {
+          "type": "integer",
+          "required": false,
+          "description": "Идентификатор аккаунта"
+        }
+      }
+    },
+    "pixel": {
+      "path": "/pixels/{pixel_id}",
+      "method": "GET",
+      "description": "Получение информации о пикселе",
+      "parameters": {
+        "pixel_id": {
+          "type": "integer",
+          "required": true,
+          "description": "Идентификатор пикселя"
+        }
+      }
+    },
+    "pixel_create": {
+      "path": "/pixels",
+      "method": "POST",
+      "description": "Создание пикселя",
+      "parameters": {
+        "pixel": {
+          "type": "object",
+          "required": true,
+          "description": "Параметры пикселя",
+          "properties": {
+            "name": {
+              "type": "string",
+              "required": true,
+              "description": "Название пикселя"
+            },
+            "account_id": {
+              "type": "integer",
+              "required": true,
+              "description": "Идентификатор аккаунта"
+            },
+            "new_app": {
+              "type": "boolean",
+              "required": false,
+              "description": "Создавать ли новое приложение"
+            },
+            "app_id": {
+              "type": "integer",
+              "required": false,
+              "description": "Идентификатор приложения"
+            }
+          }
+        }
+      }
+    },
+    "pixel_update": {
+      "path": "/pixels/{pixel_id}",
+      "method": "PUT",
+      "description": "Изменение пикселя",
+      "parameters": {
+        "pixel_id": {
+          "type": "integer",
+          "required": true,
+          "description": "Идентификатор пикселя"
+        },
+        "pixel": {
+          "type": "object",
+          "required": true,
+          "description": "Параметры пикселя для изменения"
+        }
+      }
+    },
+    "pixel_delete": {
+      "path": "/pixels/{pixel_id}",
+      "method": "DELETE",
+      "description": "Удаление пикселя",
+      "parameters": {
+        "pixel_id": {
+          "type": "integer",
+          "required": true,
+          "description": "Идентификатор пикселя"
+        }
+      }
+    },
+    "pixel_update_counter_id": {
+      "path": "/pixels/{pixel_id}/counter_id",
+      "method": "PUT",
+      "description": "Изменение ID счетчика пикселя",
+      "parameters": {
+        "pixel_id": {
+          "type": "integer",
+          "required": true,
+          "description": "Идентификатор пикселя"
+        },
+        "counter_id": {
+          "type": "integer",
+          "required": true,
+          "description": "Идентификатор счетчика"
+        }
+      }
+    },
+    "pixel_create_segment": {
+      "path": "/pixels/{pixel_id}/segments",
+      "method": "POST",
+      "description": "Создание сегмента на основе пикселя",
+      "parameters": {
+        "pixel_id": {
+          "type": "integer",
+          "required": true,
+          "description": "Идентификатор пикселя"
+        },
+        "segment": {
+          "type": "object",
+          "required": true,
+          "description": "Параметры сегмента",
+          "properties": {
+            "name": {
+              "type": "string",
+              "required": true,
+              "description": "Название сегмента"
+            },
+            "conditions": {
+              "type": "array",
+              "required": true,
+              "description": "Условия сегмента"
+            }
+          }
+        }
+      }
+    },
+    "pixel_segments": {
+      "path": "/pixels/{pixel_id}/segments",
+      "method": "GET",
+      "description": "Получение списка сегментов пикселя",
+      "parameters": {
+        "pixel_id": {
+          "type": "integer",
+          "required": true,
+          "description": "Идентификатор пикселя"
+        }
+      }
+    },
+    "pixel_segment": {
+      "path": "/pixels/{pixel_id}/segments/{segment_id}",
+      "method": "GET",
+      "description": "Получение информации о сегменте пикселя",
+      "parameters": {
+        "pixel_id": {
+          "type": "integer",
+          "required": true,
+          "description": "Идентификатор пикселя"
+        },
+        "segment_id": {
+          "type": "integer",
+          "required": true,
+          "description": "Идентификатор сегмента"
+        }
+      }
+    },
+    "pixel_segment_update": {
+      "path": "/pixels/{pixel_id}/segments/{segment_id}",
+      "method": "PUT",
+      "description": "Изменение сегмента пикселя",
+      "parameters": {
+        "pixel_id": {
+          "type": "integer",
+          "required": true,
+          "description": "Идентификатор пикселя"
+        },
+        "segment_id": {
+          "type": "integer",
+          "required": true,
+          "description": "Идентификатор сегмента"
+        },
+        "segment": {
+          "type": "object",
+          "required": true,
+          "description": "Параметры сегмента для изменения"
+        }
+      }
+    },
+    "pixel_segment_delete": {
+      "path": "/pixels/{pixel_id}/segments/{segment_id}",
+      "method": "DELETE",
+      "description": "Удаление сегмента пикселя",
+      "parameters": {
+        "pixel_id": {
+          "type": "integer",
+          "required": true,
+          "description": "Идентификатор пикселя"
+        },
+        "segment_id": {
+          "type": "integer",
+          "required": true,
+          "description": "Идентификатор сегмента"
+        }
+      }
+    },
+    "metrika_segments": {
+      "path": "/metrika_segments",
+      "method": "GET",
+      "description": "Получение списка сегментов Метрики"
+    },
+    "metrika_segment": {
+      "path": "/metrika_segments/{segment_id}",
+      "method": "GET",
+      "description": "Получение информации о сегменте Метрики",
+      "parameters": {
+        "segment_id": {
+          "type": "integer",
+          "required": true,
+          "description": "Идентификатор сегмента Метрики"
+        }
+      }
+    },
+    "geo_segments": {
+      "path": "/geo_segments",
+      "method": "GET",
+      "description": "Получение списка гео-сегментов"
+    },
+    "geo_segment": {
+      "path": "/geo_segments/{segment_id}",
+      "method": "GET",
+      "description": "Получение информации о гео-сегменте",
+      "parameters": {
+        "segment_id": {
+          "type": "integer",
+          "required": true,
+          "description": "Идентификатор гео-сегмента"
+        }
+      }
+    },
+    "geo_segment_create": {
+      "path": "/geo_segments",
+      "method": "POST",
+      "description": "Создание гео-сегмента",
+      "parameters": {
+        "geo_segment": {
+          "type": "object",
+          "required": true,
+          "description": "Параметры гео-сегмента",
+          "properties": {
+            "name": {
+              "type": "string",
+              "required": true,
+              "description": "Название гео-сегмента"
+            },
+            "points": {
+              "type": "array",
+              "required": true,
+              "description": "Координаты точек"
+            },
+            "radius": {
+              "type": "integer",
+              "required": false,
+              "description": "Радиус в метрах"
+            }
+          }
+        }
+      }
+    },
+    "geo_segment_update": {
+      "path": "/geo_segments/{segment_id}",
+      "method": "PUT",
+      "description": "Изменение гео-сегмента",
+      "parameters": {
+        "segment_id": {
+          "type": "integer",
+          "required": true,
+          "description": "Идентификатор гео-сегмента"
+        },
+        "geo_segment": {
+          "type": "object",
+          "required": true,
+          "description": "Параметры гео-сегмента для изменения"
+        }
+      }
+    },
+    "geo_segment_delete": {
+      "path": "/geo_segments/{segment_id}",
+      "method": "DELETE",
+      "description": "Удаление гео-сегмента",
+      "parameters": {
+        "segment_id": {
+          "type": "integer",
+          "required": true,
+          "description": "Идентификатор гео-сегмента"
+        }
+      }
+    },
+    "lookalike_segments": {
+      "path": "/lookalike_segments",
+      "method": "GET",
+      "description": "Получение списка lookalike-сегментов"
+    },
+    "lookalike_segment": {
+      "path": "/lookalike_segments/{segment_id}",
+      "method": "GET",
+      "description": "Получение информации о lookalike-сегменте",
+      "parameters": {
+        "segment_id": {
+          "type": "integer",
+          "required": true,
+          "description": "Идентификатор lookalike-сегмента"
+        }
+      }
+    },
+    "lookalike_segment_create": {
+      "path": "/lookalike_segments",
+      "method": "POST",
+      "description": "Создание lookalike-сегмента",
+      "parameters": {
+        "lookalike_segment": {
+          "type": "object",
+          "required": true,
+          "description": "Параметры lookalike-сегмента",
+          "properties": {
+            "name": {
+              "type": "string",
+              "required": true,
+              "description": "Название lookalike-сегмента"
+            },
+            "source_segment_id": {
+              "type": "integer",
+              "required": true,
+              "description": "Идентификатор исходного сегмента"
+            },
+            "country": {
+              "type": "string",
+              "required": false,
+              "description": "Страна"
+            }
+          }
+        }
+      }
+    },
+    "lookalike_segment_delete": {
+      "path": "/lookalike_segments/{segment_id}",
+      "method": "DELETE",
+      "description": "Удаление lookalike-сегмента",
+      "parameters": {
+        "segment_id": {
+          "type": "integer",
+          "required": true,
+          "description": "Идентификатор lookalike-сегмента"
+        }
+      }
+    },
+    "combined_segments": {
+      "path": "/combined_segments",
+      "method": "GET",
+      "description": "Получение списка комбинированных сегментов"
+    },
+    "combined_segment": {
+      "path": "/combined_segments/{segment_id}",
+      "method": "GET",
+      "description": "Получение информации о комбинированном сегменте",
+      "parameters": {
+        "segment_id": {
+          "type": "integer",
+          "required": true,
+          "description": "Идентификатор комбинированного сегмента"
+        }
+      }
+    },
+    "combined_segment_create": {
+      "path": "/combined_segments",
+      "method": "POST",
+      "description": "Создание комбинированного сегмента",
+      "parameters": {
+        "combined_segment": {
+          "type": "object",
+          "required": true,
+          "description": "Параметры комбинированного сегмента",
+          "properties": {
+            "name": {
+              "type": "string",
+              "required": true,
+              "description": "Название комбинированного сегмента"
+            },
+            "subsegments": {
+              "type": "array",
+              "required": true,
+              "description": "Подсегменты"
+            }
+          }
+        }
+      }
+    },
+    "combined_segment_update": {
+      "path": "/combined_segments/{segment_id}",
+      "method": "PUT",
+      "description": "Изменение комбинированного сегмента",
+      "parameters": {
+        "segment_id": {
+          "type": "integer",
+          "required": true,
+          "description": "Идентификатор комбинированного сегмента"
+        },
+        "combined_segment": {
+          "type": "object",
+          "required": true,
+          "description": "Параметры комбинированного сегмента для изменения"
+        }
+      }
+    },
+    "combined_segment_delete": {
+      "path": "/combined_segments/{segment_id}",
+      "method": "DELETE",
+      "description": "Удаление комбинированного сегмента",
+      "parameters": {
+        "segment_id": {
+          "type": "integer",
+          "required": true,
+          "description": "Идентификатор комбинированного сегмента"
+        }
+      }
+    },
+    "crm_segments": {
+      "path": "/crm_segments",
+      "method": "GET",
+      "description": "Получение списка CRM-сегментов"
+    },
+    "crm_segment": {
+      "path": "/crm_segments/{segment_id}",
+      "method": "GET",
+      "description": "Получение информации о CRM-сегменте",
+      "parameters": {
+        "segment_id": {
+          "type": "integer",
+          "required": true,
+          "description": "Идентификатор CRM-сегмента"
+        }
+      }
+    },
+    "crm_segment_create": {
+      "path": "/crm_segments",
+      "method": "POST",
+      "description": "Создание CRM-сегмента",
+      "parameters": {
+        "crm_segment": {
+          "type": "object",
+          "required": true,
+          "description": "Параметры CRM-сегмента",
+          "properties": {
+            "name": {
+              "type": "string",
+              "required": true,
+              "description": "Название CRM-сегмента"
+            },
+            "conditions": {
+              "type": "array",
+              "required": true,
+              "description": "Условия CRM-сегмента"
+            }
+          }
+        }
+      }
+    },
+    "crm_segment_update": {
+      "path": "/crm_segments/{segment_id}",
+      "method": "PUT",
+      "description": "Изменение CRM-сегмента",
+      "parameters": {
+        "segment_id": {
+          "type": "integer",
+          "required": true,
+          "description": "Идентификатор CRM-сегмента"
+        },
+        "crm_segment": {
+          "type": "object",
+          "required": true,
+          "description": "Параметры CRM-сегмента для изменения"
+        }
+      }
+    },
+    "crm_segment_delete": {
+      "path": "/crm_segments/{segment_id}",
+      "method": "DELETE",
+      "description": "Удаление CRM-сегмента",
+      "parameters": {
+        "segment_id": {
+          "type": "integer",
+          "required": true,
+          "description": "Идентификатор CRM-сегмента"
+        }
+      }
+    },
+    "crm_segment_upload": {
+      "path": "/crm_segments/{segment_id}/upload",
+      "method": "POST",
+      "description": "Загрузка данных в CRM-сегмент",
+      "parameters": {
+        "segment_id": {
+          "type": "integer",
+          "required": true,
+          "description": "Идентификатор CRM-сегмента"
+        },
+        "data": {
+          "type": "string",
+          "required": true,
+          "description": "Данные для загрузки"
+        }
+      }
+    },
+    "crm_segment_upload_check": {
+      "path": "/crm_segments/{segment_id}/upload/check",
+      "method": "GET",
+      "description": "Проверка статуса загрузки CRM-сегмента",
+      "parameters": {
+        "segment_id": {
+          "type": "integer",
+          "required": true,
+          "description": "Идентификатор CRM-сегмента"
+        }
+      }
+    }
+  }
+}

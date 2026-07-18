@@ -1,0 +1,1163 @@
+{
+  "base_url": "https://api-metrika.yandex.net",
+  "auth": {
+    "token": "${YANDEX_METRIKA_TOKEN}"
+  },
+  "default_headers": {
+    "Content-Type": "application/json"
+  },
+  "resources": {
+    "counters": {
+      "path": "/management/v1/counters",
+      "method": "GET",
+      "description": "Список доступных счетчиков",
+      "parameters": {
+        "counter_ids": {
+          "type": "array",
+          "required": false,
+          "description": "Список идентификаторов счетчиков"
+        },
+        "favorite": {
+          "type": "boolean",
+          "required": false,
+          "description": "Фильтр по избранным счетчикам"
+        },
+        "field": {
+          "type": "string",
+          "required": false,
+          "description": "Дополнительные параметры возвращаемого объекта"
+        },
+        "label_id": {
+          "type": "integer",
+          "required": false,
+          "description": "Фильтр по метке"
+        },
+        "offset": {
+          "type": "integer",
+          "required": false,
+          "description": "Порядковый номер счетчика для начала выдачи"
+        },
+        "per_page": {
+          "type": "integer",
+          "required": false,
+          "description": "Количество счетчиков для получения (максимум 10000)"
+        },
+        "permission": {
+          "type": "string",
+          "required": false,
+          "description": "Фильтр по уровню доступа (own, view, edit)"
+        },
+        "search_string": {
+          "type": "string",
+          "required": false,
+          "description": "Фильтр по строке (название, ID, адрес сайта)"
+        },
+        "sort": {
+          "type": "string",
+          "required": false,
+          "description": "Сортировка (None, Default, Visits, Hits, Uniques, Name)"
+        },
+        "status": {
+          "type": "string",
+          "required": false,
+          "description": "Фильтр по статусу (Active, Deleted)"
+        },
+        "type": {
+          "type": "string",
+          "required": false,
+          "description": "Фильтр по типу (simple, partner)"
+        }
+      }
+    },
+    "counter": {
+      "path": "/management/v1/counter/{counter_id}",
+      "method": "GET",
+      "description": "Информация о счетчике",
+      "parameters": {
+        "counter_id": {
+          "type": "integer",
+          "required": true,
+          "description": "Идентификатор счетчика"
+        },
+        "field": {
+          "type": "string",
+          "required": false,
+          "description": "Дополнительные параметры возвращаемого объекта"
+        }
+      }
+    },
+    "counter_create": {
+      "path": "/management/v1/counter",
+      "method": "POST",
+      "description": "Создание счетчика",
+      "parameters": {
+        "counter": {
+          "type": "object",
+          "required": true,
+          "description": "Параметры счетчика",
+          "properties": {
+            "name": {
+              "type": "string",
+              "required": true,
+              "description": "Название счетчика"
+            },
+            "site": {
+              "type": "string",
+              "required": true,
+              "description": "Адрес сайта"
+            },
+            "time_zone": {
+              "type": "string",
+              "required": false,
+              "description": "Часовой пояс"
+            },
+            "level": {
+              "type": "string",
+              "required": false,
+              "description": "Уровень доступа (owner, user)"
+            },
+            "code_options": {
+              "type": "object",
+              "required": false,
+              "description": "Настройки кода счетчика"
+            },
+            "webvisor": {
+              "type": "object",
+              "required": false,
+              "description": "Настройки Вебвизора"
+            }
+          }
+        }
+      }
+    },
+    "counter_update": {
+      "path": "/management/v1/counter/{counter_id}",
+      "method": "PUT",
+      "description": "Изменение счетчика",
+      "parameters": {
+        "counter_id": {
+          "type": "integer",
+          "required": true,
+          "description": "Идентификатор счетчика"
+        },
+        "counter": {
+          "type": "object",
+          "required": true,
+          "description": "Параметры счетчика для изменения"
+        }
+      }
+    },
+    "counter_delete": {
+      "path": "/management/v1/counter/{counter_id}",
+      "method": "DELETE",
+      "description": "Удаление счетчика",
+      "parameters": {
+        "counter_id": {
+          "type": "integer",
+          "required": true,
+          "description": "Идентификатор счетчика"
+        }
+      }
+    },
+    "counter_undelete": {
+      "path": "/management/v1/counter/{counter_id}/undelete",
+      "method": "POST",
+      "description": "Восстановление удаленного счетчика",
+      "parameters": {
+        "counter_id": {
+          "type": "integer",
+          "required": true,
+          "description": "Идентификатор счетчика"
+        }
+      }
+    },
+    "goals": {
+      "path": "/management/v1/counter/{counter_id}/goals",
+      "method": "GET",
+      "description": "Список целей счетчика",
+      "parameters": {
+        "counter_id": {
+          "type": "integer",
+          "required": true,
+          "description": "Идентификатор счетчика"
+        },
+        "id": {
+          "type": "array",
+          "required": false,
+          "description": "Список идентификаторов целей"
+        },
+        "offset": {
+          "type": "integer",
+          "required": false,
+          "description": "Смещение"
+        },
+        "per_page": {
+          "type": "integer",
+          "required": false,
+          "description": "Количество целей на странице"
+        }
+      }
+    },
+    "goal": {
+      "path": "/management/v1/counter/{counter_id}/goal/{goal_id}",
+      "method": "GET",
+      "description": "Информация о цели",
+      "parameters": {
+        "counter_id": {
+          "type": "integer",
+          "required": true,
+          "description": "Идентификатор счетчика"
+        },
+        "goal_id": {
+          "type": "integer",
+          "required": true,
+          "description": "Идентификатор цели"
+        }
+      }
+    },
+    "goal_create": {
+      "path": "/management/v1/counter/{counter_id}/goals",
+      "method": "POST",
+      "description": "Создание цели",
+      "parameters": {
+        "counter_id": {
+          "type": "integer",
+          "required": true,
+          "description": "Идентификатор счетчика"
+        },
+        "goal": {
+          "type": "object",
+          "required": true,
+          "description": "Параметры цели",
+          "properties": {
+            "id": {
+              "type": "integer",
+              "required": true,
+              "description": "Идентификатор цели (0 для создания)"
+            },
+            "name": {
+              "type": "string",
+              "required": true,
+              "description": "Название цели"
+            },
+            "type": {
+              "type": "string",
+              "required": true,
+              "description": "Тип цели (url, action, step, number, visit_duration, file, phone, email, messenger, social, chat, payment_system)",
+              "enum": ["url", "action", "step", "number", "visit_duration", "file", "phone", "email", "messenger", "social", "chat", "payment_system"]
+            },
+            "conditions": {
+              "type": "array",
+              "required": false,
+              "description": "Условия цели"
+            },
+            "default_price": {
+              "type": "number",
+              "required": false,
+              "description": "Цена цели по умолчанию"
+            }
+          }
+        }
+      }
+    },
+    "goal_update": {
+      "path": "/management/v1/counter/{counter_id}/goal/{goal_id}",
+      "method": "PUT",
+      "description": "Изменение цели",
+      "parameters": {
+        "counter_id": {
+          "type": "integer",
+          "required": true,
+          "description": "Идентификатор счетчика"
+        },
+        "goal_id": {
+          "type": "integer",
+          "required": true,
+          "description": "Идентификатор цели"
+        },
+        "goal": {
+          "type": "object",
+          "required": true,
+          "description": "Параметры цели для изменения"
+        }
+      }
+    },
+    "goal_delete": {
+      "path": "/management/v1/counter/{counter_id}/goal/{goal_id}",
+      "method": "DELETE",
+      "description": "Удаление цели",
+      "parameters": {
+        "counter_id": {
+          "type": "integer",
+          "required": true,
+          "description": "Идентификатор счетчика"
+        },
+        "goal_id": {
+          "type": "integer",
+          "required": true,
+          "description": "Идентификатор цели"
+        }
+      }
+    },
+    "filters": {
+      "path": "/management/v1/counter/{counter_id}/filters",
+      "method": "GET",
+      "description": "Список фильтров счетчика",
+      "parameters": {
+        "counter_id": {
+          "type": "integer",
+          "required": true,
+          "description": "Идентификатор счетчика"
+        }
+      }
+    },
+    "filter_create": {
+      "path": "/management/v1/counter/{counter_id}/filters",
+      "method": "POST",
+      "description": "Создание фильтра",
+      "parameters": {
+        "counter_id": {
+          "type": "integer",
+          "required": true,
+          "description": "Идентификатор счетчика"
+        },
+        "filter": {
+          "type": "object",
+          "required": true,
+          "description": "Параметры фильтра",
+          "properties": {
+            "id": {
+              "type": "integer",
+              "required": true,
+              "description": "Идентификатор фильтра (0 для создания)"
+            },
+            "attr": {
+              "type": "string",
+              "required": true,
+              "description": "Атрибут фильтра"
+            },
+            "type": {
+              "type": "string",
+              "required": true,
+              "description": "Тип фильтра"
+            },
+            "value": {
+              "type": "string",
+              "required": true,
+              "description": "Значение фильтра"
+            },
+            "action": {
+              "type": "string",
+              "required": true,
+              "description": "Действие фильтра"
+            },
+            "status": {
+              "type": "string",
+              "required": false,
+              "description": "Статус фильтра"
+            }
+          }
+        }
+      }
+    },
+    "filter_delete": {
+      "path": "/management/v1/counter/{counter_id}/filter/{filter_id}",
+      "method": "DELETE",
+      "description": "Удаление фильтра",
+      "parameters": {
+        "counter_id": {
+          "type": "integer",
+          "required": true,
+          "description": "Идентификатор счетчика"
+        },
+        "filter_id": {
+          "type": "integer",
+          "required": true,
+          "description": "Идентификатор фильтра"
+        }
+      }
+    },
+    "operations": {
+      "path": "/management/v1/counter/{counter_id}/operations",
+      "method": "GET",
+      "description": "Список операций счетчика",
+      "parameters": {
+        "counter_id": {
+          "type": "integer",
+          "required": true,
+          "description": "Идентификатор счетчика"
+        }
+      }
+    },
+    "grants": {
+      "path": "/management/v1/counter/{counter_id}/grants",
+      "method": "GET",
+      "description": "Список грантов счетчика",
+      "parameters": {
+        "counter_id": {
+          "type": "integer",
+          "required": true,
+          "description": "Идентификатор счетчика"
+        }
+      }
+    },
+    "grant_create": {
+      "path": "/management/v1/counter/{counter_id}/grants",
+      "method": "POST",
+      "description": "Создание гранта",
+      "parameters": {
+        "counter_id": {
+          "type": "integer",
+          "required": true,
+          "description": "Идентификатор счетчика"
+        },
+        "grant": {
+          "type": "object",
+          "required": true,
+          "description": "Параметры гранта",
+          "properties": {
+            "user_login": {
+              "type": "string",
+              "required": true,
+              "description": "Логин пользователя"
+            },
+            "perm": {
+              "type": "string",
+              "required": true,
+              "description": "Уровень доступа (view, edit)"
+            }
+          }
+        }
+      }
+    },
+    "grant_delete": {
+      "path": "/management/v1/counter/{counter_id}/grant/{user_logins}",
+      "method": "DELETE",
+      "description": "Удаление гранта",
+      "parameters": {
+        "counter_id": {
+          "type": "integer",
+          "required": true,
+          "description": "Идентификатор счетчика"
+        },
+        "user_logins": {
+          "type": "string",
+          "required": true,
+          "description": "Логин пользователя"
+        }
+      }
+    },
+    "segments": {
+      "path": "/management/v1/counter/{counter_id}/segments",
+      "method": "GET",
+      "description": "Список сегментов счетчика",
+      "parameters": {
+        "counter_id": {
+          "type": "integer",
+          "required": true,
+          "description": "Идентификатор счетчика"
+        },
+        "segment_id": {
+          "type": "array",
+          "required": false,
+          "description": "Список идентификаторов сегментов"
+        },
+        "offset": {
+          "type": "integer",
+          "required": false,
+          "description": "Смещение"
+        },
+        "per_page": {
+          "type": "integer",
+          "required": false,
+          "description": "Количество сегментов на странице"
+        }
+      }
+    },
+    "segment_create": {
+      "path": "/management/v1/counter/{counter_id}/segments",
+      "method": "POST",
+      "description": "Создание сегмента",
+      "parameters": {
+        "counter_id": {
+          "type": "integer",
+          "required": true,
+          "description": "Идентификатор счетчика"
+        },
+        "segment": {
+          "type": "object",
+          "required": true,
+          "description": "Параметры сегмента",
+          "properties": {
+            "id": {
+              "type": "integer",
+              "required": true,
+              "description": "Идентификатор сегмента (0 для создания)"
+            },
+            "name": {
+              "type": "string",
+              "required": true,
+              "description": "Название сегмента"
+            },
+            "expression": {
+              "type": "string",
+              "required": true,
+              "description": "Выражение сегмента"
+            },
+            "is_favorite": {
+              "type": "boolean",
+              "required": false,
+              "description": "Является ли сегмент избранным"
+            }
+          }
+        }
+      }
+    },
+    "segment_delete": {
+      "path": "/management/v1/counter/{counter_id}/segment/{segment_id}",
+      "method": "DELETE",
+      "description": "Удаление сегмента",
+      "parameters": {
+        "counter_id": {
+          "type": "integer",
+          "required": true,
+          "description": "Идентификатор счетчика"
+        },
+        "segment_id": {
+          "type": "integer",
+          "required": true,
+          "description": "Идентификатор сегмента"
+        }
+      }
+    },
+    "labels": {
+      "path": "/management/v1/labels",
+      "method": "GET",
+      "description": "Список меток"
+    },
+    "label_create": {
+      "path": "/management/v1/labels",
+      "method": "POST",
+      "description": "Создание метки",
+      "parameters": {
+        "label": {
+          "type": "object",
+          "required": true,
+          "description": "Параметры метки",
+          "properties": {
+            "name": {
+              "type": "string",
+              "required": true,
+              "description": "Название метки"
+            }
+          }
+        }
+      }
+    },
+    "label_update": {
+      "path": "/management/v1/label/{label_id}",
+      "method": "PUT",
+      "description": "Изменение метки",
+      "parameters": {
+        "label_id": {
+          "type": "integer",
+          "required": true,
+          "description": "Идентификатор метки"
+        },
+        "label": {
+          "type": "object",
+          "required": true,
+          "description": "Параметры метки для изменения"
+        }
+      }
+    },
+    "label_delete": {
+      "path": "/management/v1/label/{label_id}",
+      "method": "DELETE",
+      "description": "Удаление метки",
+      "parameters": {
+        "label_id": {
+          "type": "integer",
+          "required": true,
+          "description": "Идентификатор метки"
+        }
+      }
+    },
+    "label_bind_counters": {
+      "path": "/management/v1/label/{label_id}/bind_counters",
+      "method": "POST",
+      "description": "Привязка счетчиков к метке",
+      "parameters": {
+        "label_id": {
+          "type": "integer",
+          "required": true,
+          "description": "Идентификатор метки"
+        },
+        "counter_ids": {
+          "type": "array",
+          "required": true,
+          "description": "Список идентификаторов счетчиков"
+        }
+      }
+    },
+    "label_unbind_counters": {
+      "path": "/management/v1/label/{label_id}/unbind_counters",
+      "method": "POST",
+      "description": "Отвязка счетчиков от метки",
+      "parameters": {
+        "label_id": {
+          "type": "integer",
+          "required": true,
+          "description": "Идентификатор метки"
+        },
+        "counter_ids": {
+          "type": "array",
+          "required": true,
+          "description": "Список идентификаторов счетчиков"
+        }
+      }
+    },
+    "accounts": {
+      "path": "/management/v1/accounts",
+      "method": "GET",
+      "description": "Список аккаунтов"
+    },
+    "representatives": {
+      "path": "/management/v1/counter/{counter_id}/representatives",
+      "method": "GET",
+      "description": "Список представителей счетчика",
+      "parameters": {
+        "counter_id": {
+          "type": "integer",
+          "required": true,
+          "description": "Идентификатор счетчика"
+        }
+      }
+    },
+    "representative_create": {
+      "path": "/management/v1/counter/{counter_id}/representatives",
+      "method": "POST",
+      "description": "Создание представителя",
+      "parameters": {
+        "counter_id": {
+          "type": "integer",
+          "required": true,
+          "description": "Идентификатор счетчика"
+        },
+        "representative": {
+          "type": "object",
+          "required": true,
+          "description": "Параметры представителя"
+        }
+      }
+    },
+    "representative_delete": {
+      "path": "/management/v1/counter/{counter_id}/representative/{login}",
+      "method": "DELETE",
+      "description": "Удаление представителя",
+      "parameters": {
+        "counter_id": {
+          "type": "integer",
+          "required": true,
+          "description": "Идентификатор счетчика"
+        },
+        "login": {
+          "type": "string",
+          "required": true,
+          "description": "Логин представителя"
+        }
+      }
+    },
+    "direct_clients": {
+      "path": "/management/v1/counter/{counter_id}/direct_clients",
+      "method": "GET",
+      "description": "Список клиентов Директа",
+      "parameters": {
+        "counter_id": {
+          "type": "integer",
+          "required": true,
+          "description": "Идентификатор счетчика"
+        }
+      }
+    },
+    "direct_clients_bind": {
+      "path": "/management/v1/counter/{counter_id}/direct_clients",
+      "method": "POST",
+      "description": "Привязка клиентов Директа",
+      "parameters": {
+        "counter_id": {
+          "type": "integer",
+          "required": true,
+          "description": "Идентификатор счетчика"
+        },
+        "logins": {
+          "type": "array",
+          "required": true,
+          "description": "Список логинов клиентов"
+        }
+      }
+    },
+    "direct_clients_unbind": {
+      "path": "/management/v1/counter/{counter_id}/direct_clients",
+      "method": "DELETE",
+      "description": "Отвязка клиентов Директа",
+      "parameters": {
+        "counter_id": {
+          "type": "integer",
+          "required": true,
+          "description": "Идентификатор счетчика"
+        },
+        "logins": {
+          "type": "array",
+          "required": true,
+          "description": "Список логинов клиентов"
+        }
+      }
+    },
+    "exports": {
+      "path": "/management/v1/counter/{counter_id}/exports",
+      "method": "GET",
+      "description": "Список экспортов в Yandex Cloud",
+      "parameters": {
+        "counter_id": {
+          "type": "integer",
+          "required": true,
+          "description": "Идентификатор счетчика"
+        }
+      }
+    },
+    "export_create": {
+      "path": "/management/v1/counter/{counter_id}/exports",
+      "method": "POST",
+      "description": "Создание экспорта в Yandex Cloud",
+      "parameters": {
+        "counter_id": {
+          "type": "integer",
+          "required": true,
+          "description": "Идентификатор счетчика"
+        },
+        "export": {
+          "type": "object",
+          "required": true,
+          "description": "Параметры экспорта"
+        }
+      }
+    },
+    "export_delete": {
+      "path": "/management/v1/counter/{counter_id}/export/{export_id}",
+      "method": "DELETE",
+      "description": "Удаление экспорта",
+      "parameters": {
+        "counter_id": {
+          "type": "integer",
+          "required": true,
+          "description": "Идентификатор счетчика"
+        },
+        "export_id": {
+          "type": "integer",
+          "required": true,
+          "description": "Идентификатор экспорта"
+        }
+      }
+    },
+    "stat_data": {
+      "path": "/stat/v1/data",
+      "method": "GET",
+      "description": "Получение статистических данных (таблица)",
+      "parameters": {
+        "id": {
+          "type": "integer",
+          "required": true,
+          "description": "Идентификатор счетчика"
+        },
+        "metrics": {
+          "type": "string",
+          "required": true,
+          "description": "Метрики через запятую (ym:s:visits, ym:s:users, и т.д.)"
+        },
+        "dimensions": {
+          "type": "string",
+          "required": false,
+          "description": "Группировки через запятую (ym:s:browser, ym:s:operatingSystem, и т.д.)"
+        },
+        "filters": {
+          "type": "string",
+          "required": false,
+          "description": "Фильтры данных"
+        },
+        "date1": {
+          "type": "string",
+          "required": false,
+          "description": "Начальная дата (YYYY-MM-DD)"
+        },
+        "date2": {
+          "type": "string",
+          "required": false,
+          "description": "Конечная дата (YYYY-MM-DD)"
+        },
+        "limit": {
+          "type": "integer",
+          "required": false,
+          "description": "Количество результатов (максимум 100000)"
+        },
+        "offset": {
+          "type": "integer",
+          "required": false,
+          "description": "Смещение для пагинации"
+        },
+        "sort": {
+          "type": "string",
+          "required": false,
+          "description": "Сортировка"
+        },
+        "accuracy": {
+          "type": "string",
+          "required": false,
+          "description": "Точность (full, approx)"
+        },
+        "proposed": {
+          "type": "boolean",
+          "required": false,
+          "description": "Предлагать ли сегменты для уточнения"
+        },
+        "filter_limit": {
+          "type": "integer",
+          "required": false,
+          "description": "Лимит фильтров"
+        },
+        "attribution": {
+          "type": "string",
+          "required": false,
+          "description": "Модель атрибуции (last, first, linear, time, u-shaped, positional, last-significant)"
+        }
+      }
+    },
+    "stat_data_drilldown": {
+      "path": "/stat/v1/data/drilldown",
+      "method": "GET",
+      "description": "Получение данных в древовидном отчете",
+      "parameters": {
+        "id": {
+          "type": "integer",
+          "required": true,
+          "description": "Идентификатор счетчика"
+        },
+        "metrics": {
+          "type": "string",
+          "required": true,
+          "description": "Метрики"
+        },
+        "dimensions": {
+          "type": "string",
+          "required": false,
+          "description": "Группировки"
+        },
+        "filters": {
+          "type": "string",
+          "required": false,
+          "description": "Фильтры"
+        },
+        "date1": {
+          "type": "string",
+          "required": false,
+          "description": "Начальная дата"
+        },
+        "date2": {
+          "type": "string",
+          "required": false,
+          "description": "Конечная дата"
+        },
+        "limit": {
+          "type": "integer",
+          "required": false,
+          "description": "Количество результатов"
+        },
+        "offset": {
+          "type": "integer",
+          "required": false,
+          "description": "Смещение"
+        }
+      }
+    },
+    "stat_data_bytime": {
+      "path": "/stat/v1/data/bytime",
+      "method": "GET",
+      "description": "Получение данных с разбивкой по времени",
+      "parameters": {
+        "id": {
+          "type": "integer",
+          "required": true,
+          "description": "Идентификатор счетчика"
+        },
+        "metrics": {
+          "type": "string",
+          "required": true,
+          "description": "Метрики"
+        },
+        "dimensions": {
+          "type": "string",
+          "required": false,
+          "description": "Группировки"
+        },
+        "filters": {
+          "type": "string",
+          "required": false,
+          "description": "Фильтры"
+        },
+        "date1": {
+          "type": "string",
+          "required": false,
+          "description": "Начальная дата"
+        },
+        "date2": {
+          "type": "string",
+          "required": false,
+          "description": "Конечная дата"
+        },
+        "limit": {
+          "type": "integer",
+          "required": false,
+          "description": "Количество результатов"
+        },
+        "offset": {
+          "type": "integer",
+          "required": false,
+          "description": "Смещение"
+        },
+        "interval": {
+          "type": "string",
+          "required": false,
+          "description": "Интервал группировки (day, week, month)"
+        }
+      }
+    },
+    "stat_data_comparison": {
+      "path": "/stat/v1/data/comparison",
+      "method": "GET",
+      "description": "Сравнение сегментов данных",
+      "parameters": {
+        "id": {
+          "type": "integer",
+          "required": true,
+          "description": "Идентификатор счетчика"
+        },
+        "metrics": {
+          "type": "string",
+          "required": true,
+          "description": "Метрики"
+        },
+        "dimensions": {
+          "type": "string",
+          "required": false,
+          "description": "Группировки"
+        },
+        "filters": {
+          "type": "string",
+          "required": false,
+          "description": "Фильтры для сравнения"
+        },
+        "date1": {
+          "type": "string",
+          "required": false,
+          "description": "Начальная дата"
+        },
+        "date2": {
+          "type": "string",
+          "required": false,
+          "description": "Конечная дата"
+        },
+        "limit": {
+          "type": "integer",
+          "required": false,
+          "description": "Количество результатов"
+        },
+        "offset": {
+          "type": "integer",
+          "required": false,
+          "description": "Смещение"
+        }
+      }
+    },
+    "logrequests": {
+      "path": "/management/v1/counter/{counter_id}/logrequests",
+      "method": "GET",
+      "description": "Список запросов на получение логов",
+      "parameters": {
+        "counter_id": {
+          "type": "integer",
+          "required": true,
+          "description": "Идентификатор счетчика"
+        },
+        "date_from": {
+          "type": "string",
+          "required": false,
+          "description": "Начальная дата"
+        },
+        "date_to": {
+          "type": "string",
+          "required": false,
+          "description": "Конечная дата"
+        },
+        "source": {
+          "type": "string",
+          "required": false,
+          "description": "Источник данных"
+        },
+        "fields": {
+          "type": "string",
+          "required": false,
+          "description": "Поля для получения"
+        }
+      }
+    },
+    "logrequest": {
+      "path": "/management/v1/counter/{counter_id}/logrequest/{logrequest_id}",
+      "method": "GET",
+      "description": "Информация о запросе на получение логов",
+      "parameters": {
+        "counter_id": {
+          "type": "integer",
+          "required": true,
+          "description": "Идентификатор счетчика"
+        },
+        "logrequest_id": {
+          "type": "integer",
+          "required": true,
+          "description": "Идентификатор запроса"
+        }
+      }
+    },
+    "logrequest_create": {
+      "path": "/management/v1/counter/{counter_id}/logrequests",
+      "method": "POST",
+      "description": "Создание запроса на получение логов",
+      "parameters": {
+        "counter_id": {
+          "type": "integer",
+          "required": true,
+          "description": "Идентификатор счетчика"
+        },
+        "logrequest": {
+          "type": "object",
+          "required": true,
+          "description": "Параметры запроса",
+          "properties": {
+            "date1": {
+              "type": "string",
+              "required": true,
+              "description": "Начальная дата (YYYY-MM-DD)"
+            },
+            "date2": {
+              "type": "string",
+              "required": true,
+              "description": "Конечная дата (YYYY-MM-DD)"
+            },
+            "source": {
+              "type": "string",
+              "required": true,
+              "description": "Источник данных (hits, visits)"
+            },
+            "fields": {
+              "type": "string",
+              "required": true,
+              "description": "Поля для получения"
+            }
+          }
+        }
+      }
+    },
+    "logrequest_cancel": {
+      "path": "/management/v1/counter/{counter_id}/logrequest/{logrequest_id}/cancel",
+      "method": "POST",
+      "description": "Отмена запроса на получение логов",
+      "parameters": {
+        "counter_id": {
+          "type": "integer",
+          "required": true,
+          "description": "Идентификатор счетчика"
+        },
+        "logrequest_id": {
+          "type": "integer",
+          "required": true,
+          "description": "Идентификатор запроса"
+        }
+      }
+    },
+    "logrequest_reset": {
+      "path": "/management/v1/counter/{counter_id}/logrequest/{logrequest_id}/reset",
+      "method": "POST",
+      "description": "Сброс запроса на получение логов",
+      "parameters": {
+        "counter_id": {
+          "type": "integer",
+          "required": true,
+          "description": "Идентификатор счетчика"
+        },
+        "logrequest_id": {
+          "type": "integer",
+          "required": true,
+          "description": "Идентификатор запроса"
+        }
+      }
+    },
+    "logrequest_clean": {
+      "path": "/management/v1/counter/{counter_id}/logrequest/{logrequest_id}/clean",
+      "method": "POST",
+      "description": "Очистка запроса на получение логов",
+      "parameters": {
+        "counter_id": {
+          "type": "integer",
+          "required": true,
+          "description": "Идентификатор счетчика"
+        },
+        "logrequest_id": {
+          "type": "integer",
+          "required": true,
+          "description": "Идентификатор запроса"
+        }
+      }
+    },
+    "logrequest_download": {
+      "path": "/management/v1/counter/{counter_id}/logrequest/{logrequest_id}/part/{logpart_id}/download",
+      "method": "GET",
+      "description": "Скачивание части запроса на получение логов",
+      "parameters": {
+        "counter_id": {
+          "type": "integer",
+          "required": true,
+          "description": "Идентификатор счетчика"
+        },
+        "logrequest_id": {
+          "type": "integer",
+          "required": true,
+          "description": "Идентификатор запроса"
+        },
+        "logpart_id": {
+          "type": "integer",
+          "required": true,
+          "description": "Идентификатор части запроса"
+        }
+      }
+    },
+    "messengers": {
+      "path": "/management/v1/messengers",
+      "method": "GET",
+      "description": "Список мессенджеров"
+    },
+    "social_networks": {
+      "path": "/management/v1/social_networks",
+      "method": "GET",
+      "description": "Список социальных сетей"
+    },
+    "currencies": {
+      "path": "/management/v1/currencies",
+      "method": "GET",
+      "description": "Список валют"
+    },
+    "timezones": {
+      "path": "/management/v1/timezones",
+      "method": "GET",
+      "description": "Список часовых поясов"
+    }
+  }
+}

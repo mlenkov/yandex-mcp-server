@@ -1,0 +1,64 @@
+name: mais
+
+services:
+  yandex-mcp:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: mais-yandex-mcp
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    env_file: .env.prod
+    depends_on:
+      mysql:
+        condition: service_healthy
+    volumes:
+      - ./data:/app/data
+      - ./app/yandex_configs:/app/app/yandex_configs:ro
+    networks:
+      - mais-bifrost-net
+    labels:
+      project: "mais"
+      service: "yandex-mcp"
+      environment: "production"
+    deploy:
+      resources:
+        limits:
+          cpus: "0.3"
+          memory: "128M"
+
+  mysql:
+    image: mysql:8.0
+    container_name: mais-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: yandex_mcp
+      MYSQL_USER: ${MYSQL_USER:-yandex_mcp}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - mais-bifrost-net
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    deploy:
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: "512M"
+
+volumes:
+  mysql_data:
+    name: mais-mysql-data
+
+networks:
+  mais-bifrost-net:
+    external: true
+    name: mais-bifrost-net

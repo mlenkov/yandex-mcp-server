@@ -1,0 +1,786 @@
+{
+  "base_url": "https://api.webmaster.yandex.net",
+  "auth": {
+    "token": "${YANDEX_WEBMASTER_TOKEN}"
+  },
+  "default_headers": {
+    "Content-Type": "application/json"
+  },
+  "resources": {
+    "user": {
+      "path": "/user/",
+      "method": "GET",
+      "description": "Получение идентификатора пользователя"
+    },
+    "hosts": {
+      "path": "/user/{user_id}/hosts/",
+      "method": "GET",
+      "description": "Получение списка сайтов пользователя",
+      "parameters": {
+        "user_id": {
+          "type": "string",
+          "required": true,
+          "description": "Идентификатор пользователя"
+        }
+      }
+    },
+    "host_add": {
+      "path": "/user/{user_id}/hosts/",
+      "method": "POST",
+      "description": "Добавление сайта",
+      "parameters": {
+        "user_id": {
+          "type": "string",
+          "required": true,
+          "description": "Идентификатор пользователя"
+        },
+        "host": {
+          "type": "object",
+          "required": true,
+          "description": "Параметры сайта",
+          "properties": {
+            "unicode_host_url": {
+              "type": "string",
+              "required": true,
+              "description": "URL сайта"
+            }
+          }
+        }
+      }
+    },
+    "host": {
+      "path": "/user/{user_id}/hosts/{host_id}/",
+      "method": "GET",
+      "description": "Получение информации о сайте",
+      "parameters": {
+        "user_id": {
+          "type": "string",
+          "required": true,
+          "description": "Идентификатор пользователя"
+        },
+        "host_id": {
+          "type": "string",
+          "required": true,
+          "description": "Идентификатор сайта"
+        }
+      }
+    },
+    "host_delete": {
+      "path": "/user/{user_id}/hosts/{host_id}/",
+      "method": "DELETE",
+      "description": "Удаление сайта",
+      "parameters": {
+        "user_id": {
+          "type": "string",
+          "required": true,
+          "description": "Идентификатор пользователя"
+        },
+        "host_id": {
+          "type": "string",
+          "required": true,
+          "description": "Идентификатор сайта"
+        }
+      }
+    },
+    "host_summary": {
+      "path": "/user/{user_id}/hosts/{host_id}/summary/",
+      "method": "GET",
+      "description": "Получение статистики сайта",
+      "parameters": {
+        "user_id": {
+          "type": "string",
+          "required": true,
+          "description": "Идентификатор пользователя"
+        },
+        "host_id": {
+          "type": "string",
+          "required": true,
+          "description": "Идентификатор сайта"
+        }
+      }
+    },
+    "host_important_urls": {
+      "path": "/user/{user_id}/hosts/{host_id}/important-urls/",
+      "method": "GET",
+      "description": "Мониторинг важных страниц",
+      "parameters": {
+        "user_id": {
+          "type": "string",
+          "required": true,
+          "description": "Идентификатор пользователя"
+        },
+        "host_id": {
+          "type": "string",
+          "required": true,
+          "description": "Идентификатор сайта"
+        }
+      }
+    },
+    "host_important_urls_history": {
+      "path": "/user/{user_id}/hosts/{host_id}/important-urls/history/",
+      "method": "GET",
+      "description": "Получение истории изменений важной страницы",
+      "parameters": {
+        "user_id": {
+          "type": "string",
+          "required": true,
+          "description": "Идентификатор пользователя"
+        },
+        "host_id": {
+          "type": "string",
+          "required": true,
+          "description": "Идентификатор сайта"
+        }
+      }
+    },
+    "host_verification": {
+      "path": "/user/{user_id}/hosts/{host_id}/verification/",
+      "method": "GET",
+      "description": "Получение информации о подтверждении сайта",
+      "parameters": {
+        "user_id": {
+          "type": "string",
+          "required": true,
+          "description": "Идентификатор пользователя"
+        },
+        "host_id": {
+          "type": "string",
+          "required": true,
+          "description": "Идентификатор сайта"
+        }
+      }
+    },
+    "host_verification_start": {
+      "path": "/user/{user_id}/hosts/{host_id}/verification/",
+      "method": "POST",
+      "description": "Запуск процедуры подтверждения прав",
+      "parameters": {
+        "user_id": {
+          "type": "string",
+          "required": true,
+          "description": "Идентификатор пользователя"
+        },
+        "host_id": {
+          "type": "string",
+          "required": true,
+          "description": "Идентификатор сайта"
+        }
+      }
+    },
+    "host_owners": {
+      "path": "/user/{user_id}/hosts/{host_id}/owners/",
+      "method": "GET",
+      "description": "Получение списка пользователей, подтвердивших права на сайт",
+      "parameters": {
+        "user_id": {
+          "type": "string",
+          "required": true,
+          "description": "Идентификатор пользователя"
+        },
+        "host_id": {
+          "type": "string",
+          "required": true,
+          "description": "Идентификатор сайта"
+        }
+      }
+    },
+    "host_sitemaps": {
+      "path": "/user/{user_id}/hosts/{host_id}/sitemaps/",
+      "method": "GET",
+      "description": "Получение списка файлов Sitemap",
+      "parameters": {
+        "user_id": {
+          "type": "string",
+          "required": true,
+          "description": "Идентификатор пользователя"
+        },
+        "host_id": {
+          "type": "string",
+          "required": true,
+          "description": "Идентификатор сайта"
+        }
+      }
+    },
+    "host_sitemap": {
+      "path": "/user/{user_id}/hosts/{host_id}/sitemaps/{sitemap_id}/",
+      "method": "GET",
+      "description": "Получение информации о файле Sitemap",
+      "parameters": {
+        "user_id": {
+          "type": "string",
+          "required": true,
+          "description": "Идентификатор пользователя"
+        },
+        "host_id": {
+          "type": "string",
+          "required": true,
+          "description": "Идентификатор сайта"
+        },
+        "sitemap_id": {
+          "type": "string",
+          "required": true,
+          "description": "Идентификатор Sitemap"
+        }
+      }
+    },
+    "host_user_added_sitemaps": {
+      "path": "/user/{user_id}/hosts/{host_id}/user-added-sitemaps/",
+      "method": "GET",
+      "description": "Получение списка файлов Sitemap, добавленных пользователем",
+      "parameters": {
+        "user_id": {
+          "type": "string",
+          "required": true,
+          "description": "Идентификатор пользователя"
+        },
+        "host_id": {
+          "type": "string",
+          "required": true,
+          "description": "Идентификатор сайта"
+        }
+      }
+    },
+    "host_user_added_sitemap_add": {
+      "path": "/user/{user_id}/hosts/{host_id}/user-added-sitemaps/",
+      "method": "POST",
+      "description": "Добавление файла Sitemap",
+      "parameters": {
+        "user_id": {
+          "type": "string",
+          "required": true,
+          "description": "Идентификатор пользователя"
+        },
+        "host_id": {
+          "type": "string",
+          "required": true,
+          "description": "Идентификатор сайта"
+        },
+        "sitemap": {
+          "type": "object",
+          "required": true,
+          "description": "Параметры Sitemap",
+          "properties": {
+            "url": {
+              "type": "string",
+              "required": true,
+              "description": "URL Sitemap"
+            }
+          }
+        }
+      }
+    },
+    "host_user_added_sitemap_info": {
+      "path": "/user/{user_id}/hosts/{host_id}/user-added-sitemaps/{sitemap_id}/",
+      "method": "GET",
+      "description": "Получение информации о Sitemap, добавленном пользователем",
+      "parameters": {
+        "user_id": {
+          "type": "string",
+          "required": true,
+          "description": "Идентификатор пользователя"
+        },
+        "host_id": {
+          "type": "string",
+          "required": true,
+          "description": "Идентификатор сайта"
+        },
+        "sitemap_id": {
+          "type": "string",
+          "required": true,
+          "description": "Идентификатор Sitemap"
+        }
+      }
+    },
+    "host_user_added_sitemap_delete": {
+      "path": "/user/{user_id}/hosts/{host_id}/user-added-sitemaps/{sitemap_id}/",
+      "method": "DELETE",
+      "description": "Удаление файла Sitemap",
+      "parameters": {
+        "user_id": {
+          "type": "string",
+          "required": true,
+          "description": "Идентификатор пользователя"
+        },
+        "host_id": {
+          "type": "string",
+          "required": true,
+          "description": "Идентификатор сайта"
+        },
+        "sitemap_id": {
+          "type": "string",
+          "required": true,
+          "description": "Идентификатор Sitemap"
+        }
+      }
+    },
+    "host_sqi_history": {
+      "path": "/user/{user_id}/hosts/{host_id}/sqi-history/",
+      "method": "GET",
+      "description": "Получение истории изменения ИКС",
+      "parameters": {
+        "user_id": {
+          "type": "string",
+          "required": true,
+          "description": "Идентификатор пользователя"
+        },
+        "host_id": {
+          "type": "string",
+          "required": true,
+          "description": "Идентификатор сайта"
+        }
+      }
+    },
+    "host_search_queries_popular": {
+      "path": "/user/{user_id}/hosts/{host_id}/search-queries/popular/",
+      "method": "GET",
+      "description": "Получение информации о популярных поисковых запросах",
+      "parameters": {
+        "user_id": {
+          "type": "string",
+          "required": true,
+          "description": "Идентификатор пользователя"
+        },
+        "host_id": {
+          "type": "string",
+          "required": true,
+          "description": "Идентификатор сайта"
+        }
+      }
+    },
+    "host_search_queries_history_all": {
+      "path": "/user/{user_id}/hosts/{host_id}/search-queries/all/history/",
+      "method": "GET",
+      "description": "Получение общей статистики по всем поисковым запросам",
+      "parameters": {
+        "user_id": {
+          "type": "string",
+          "required": true,
+          "description": "Идентификатор пользователя"
+        },
+        "host_id": {
+          "type": "string",
+          "required": true,
+          "description": "Идентификатор сайта"
+        }
+      }
+    },
+    "host_search_queries_history": {
+      "path": "/user/{user_id}/hosts/{host_id}/search-queries/{query_id}/history/",
+      "method": "GET",
+      "description": "Получение общей статистики по поисковому запросу",
+      "parameters": {
+        "user_id": {
+          "type": "string",
+          "required": true,
+          "description": "Идентификатор пользователя"
+        },
+        "host_id": {
+          "type": "string",
+          "required": true,
+          "description": "Идентификатор сайта"
+        },
+        "query_id": {
+          "type": "string",
+          "required": true,
+          "description": "Идентификатор запроса"
+        }
+      }
+    },
+    "host_query_analytics": {
+      "path": "/user/{user_id}/hosts/{host_id}/query-analytics/list/",
+      "method": "GET",
+      "description": "Мониторинг поисковых запросов",
+      "parameters": {
+        "user_id": {
+          "type": "string",
+          "required": true,
+          "description": "Идентификатор пользователя"
+        },
+        "host_id": {
+          "type": "string",
+          "required": true,
+          "description": "Идентификатор сайта"
+        }
+      }
+    },
+    "host_recrawl_queue": {
+      "path": "/user/{user_id}/hosts/{host_id}/recrawl/queue/",
+      "method": "GET",
+      "description": "Получение списка задач на переобход",
+      "parameters": {
+        "user_id": {
+          "type": "string",
+          "required": true,
+          "description": "Идентификатор пользователя"
+        },
+        "host_id": {
+          "type": "string",
+          "required": true,
+          "description": "Идентификатор сайта"
+        }
+      }
+    },
+    "host_recrawl_add": {
+      "path": "/user/{user_id}/hosts/{host_id}/recrawl/queue/",
+      "method": "POST",
+      "description": "Отправление страницы сайта на переобход",
+      "parameters": {
+        "user_id": {
+          "type": "string",
+          "required": true,
+          "description": "Идентификатор пользователя"
+        },
+        "host_id": {
+          "type": "string",
+          "required": true,
+          "description": "Идентификатор сайта"
+        },
+        "recrawl_request": {
+          "type": "object",
+          "required": true,
+          "description": "Параметры запроса на переобход",
+          "properties": {
+            "url": {
+              "type": "string",
+              "required": true,
+              "description": "URL для переобхода"
+            }
+          }
+        }
+      }
+    },
+    "host_recrawl_quota": {
+      "path": "/user/{user_id}/hosts/{host_id}/recrawl/quota/",
+      "method": "GET",
+      "description": "Проверка квоты на переобход",
+      "parameters": {
+        "user_id": {
+          "type": "string",
+          "required": true,
+          "description": "Идентификатор пользователя"
+        },
+        "host_id": {
+          "type": "string",
+          "required": true,
+          "description": "Идентификатор сайта"
+        }
+      }
+    },
+    "host_recrawl_task": {
+      "path": "/user/{user_id}/hosts/{host_id}/recrawl/queue/{task_id}/",
+      "method": "GET",
+      "description": "Проверка статуса задачи на переобход",
+      "parameters": {
+        "user_id": {
+          "type": "string",
+          "required": true,
+          "description": "Идентификатор пользователя"
+        },
+        "host_id": {
+          "type": "string",
+          "required": true,
+          "description": "Идентификатор сайта"
+        },
+        "task_id": {
+          "type": "string",
+          "required": true,
+          "description": "Идентификатор задачи"
+        }
+      }
+    },
+    "host_diagnostics": {
+      "path": "/user/{user_id}/hosts/{host_id}/diagnostics/",
+      "method": "GET",
+      "description": "Диагностика сайта",
+      "parameters": {
+        "user_id": {
+          "type": "string",
+          "required": true,
+          "description": "Идентификатор пользователя"
+        },
+        "host_id": {
+          "type": "string",
+          "required": true,
+          "description": "Идентификатор сайта"
+        }
+      }
+    },
+    "host_indexing_history": {
+      "path": "/user/{user_id}/hosts/{host_id}/indexing/history/",
+      "method": "GET",
+      "description": "Получение истории индексирования сайта",
+      "parameters": {
+        "user_id": {
+          "type": "string",
+          "required": true,
+          "description": "Идентификатор пользователя"
+        },
+        "host_id": {
+          "type": "string",
+          "required": true,
+          "description": "Идентификатор сайта"
+        }
+      }
+    },
+    "host_indexing_samples": {
+      "path": "/user/{user_id}/hosts/{host_id}/indexing/samples/",
+      "method": "GET",
+      "description": "Просмотр примеров загруженных страниц",
+      "parameters": {
+        "user_id": {
+          "type": "string",
+          "required": true,
+          "description": "Идентификатор пользователя"
+        },
+        "host_id": {
+          "type": "string",
+          "required": true,
+          "description": "Идентификатор сайта"
+        }
+      }
+    },
+    "host_insearch_history": {
+      "path": "/user/{user_id}/hosts/{host_id}/search-urls/in-search/history/",
+      "method": "GET",
+      "description": "Получение истории изменения количества страниц в поиске",
+      "parameters": {
+        "user_id": {
+          "type": "string",
+          "required": true,
+          "description": "Идентификатор пользователя"
+        },
+        "host_id": {
+          "type": "string",
+          "required": true,
+          "description": "Идентификатор сайта"
+        }
+      }
+    },
+    "host_insearch_samples": {
+      "path": "/user/{user_id}/hosts/{host_id}/search-urls/in-search/samples/",
+      "method": "GET",
+      "description": "Просмотр примеров страниц в поиске",
+      "parameters": {
+        "user_id": {
+          "type": "string",
+          "required": true,
+          "description": "Идентификатор пользователя"
+        },
+        "host_id": {
+          "type": "string",
+          "required": true,
+          "description": "Идентификатор сайта"
+        }
+      }
+    },
+    "host_search_events_history": {
+      "path": "/user/{user_id}/hosts/{host_id}/search-urls/events/history/",
+      "method": "GET",
+      "description": "Получение истории появления и исключения страниц из поиска",
+      "parameters": {
+        "user_id": {
+          "type": "string",
+          "required": true,
+          "description": "Идентификатор пользователя"
+        },
+        "host_id": {
+          "type": "string",
+          "required": true,
+          "description": "Идентификатор сайта"
+        }
+      }
+    },
+    "host_search_events_samples": {
+      "path": "/user/{user_id}/hosts/{host_id}/search-urls/events/samples/",
+      "method": "GET",
+      "description": "Просмотр примеров появившихся и удаленных страниц из поиска",
+      "parameters": {
+        "user_id": {
+          "type": "string",
+          "required": true,
+          "description": "Идентификатор пользователя"
+        },
+        "host_id": {
+          "type": "string",
+          "required": true,
+          "description": "Идентификатор сайта"
+        }
+      }
+    },
+    "host_links_internal_samples": {
+      "path": "/user/{user_id}/hosts/{host_id}/links/internal/broken/samples/",
+      "method": "GET",
+      "description": "Получение информации о неработающих внутренних ссылках сайта",
+      "parameters": {
+        "user_id": {
+          "type": "string",
+          "required": true,
+          "description": "Идентификатор пользователя"
+        },
+        "host_id": {
+          "type": "string",
+          "required": true,
+          "description": "Идентификатор сайта"
+        }
+      }
+    },
+    "host_links_internal_history": {
+      "path": "/user/{user_id}/hosts/{host_id}/links/internal/broken/history/",
+      "method": "GET",
+      "description": "Получение истории изменения количества неработающих внутренних ссылок сайта",
+      "parameters": {
+        "user_id": {
+          "type": "string",
+          "required": true,
+          "description": "Идентификатор пользователя"
+        },
+        "host_id": {
+          "type": "string",
+          "required": true,
+          "description": "Идентификатор сайта"
+        }
+      }
+    },
+    "host_links_external_samples": {
+      "path": "/user/{user_id}/hosts/{host_id}/links/external/samples/",
+      "method": "GET",
+      "description": "Получение информации о внешних ссылках на сайт",
+      "parameters": {
+        "user_id": {
+          "type": "string",
+          "required": true,
+          "description": "Идентификатор пользователя"
+        },
+        "host_id": {
+          "type": "string",
+          "required": true,
+          "description": "Идентификатор сайта"
+        }
+      }
+    },
+    "host_links_external_history": {
+      "path": "/user/{user_id}/hosts/{host_id}/links/external/history/",
+      "method": "GET",
+      "description": "Получение истории изменения количества внешних ссылок на сайт",
+      "parameters": {
+        "user_id": {
+          "type": "string",
+          "required": true,
+          "description": "Идентификатор пользователя"
+        },
+        "host_id": {
+          "type": "string",
+          "required": true,
+          "description": "Идентификатор сайта"
+        }
+      }
+    },
+    "host_feeds_list": {
+      "path": "/user/{user_id}/hosts/{host_id}/feeds/list/",
+      "method": "GET",
+      "description": "Получение информации о загруженных фидах",
+      "parameters": {
+        "user_id": {
+          "type": "string",
+          "required": true,
+          "description": "Идентификатор пользователя"
+        },
+        "host_id": {
+          "type": "string",
+          "required": true,
+          "description": "Идентификатор сайта"
+        }
+      }
+    },
+    "host_feed_add_start": {
+      "path": "/user/{user_id}/hosts/{host_id}/feeds/add/start/",
+      "method": "POST",
+      "description": "Асинхронная загрузка фида",
+      "parameters": {
+        "user_id": {
+          "type": "string",
+          "required": true,
+          "description": "Идентификатор пользователя"
+        },
+        "host_id": {
+          "type": "string",
+          "required": true,
+          "description": "Идентификатор сайта"
+        },
+        "feed": {
+          "type": "object",
+          "required": true,
+          "description": "Параметры фида",
+          "properties": {
+            "url": {
+              "type": "string",
+              "required": true,
+              "description": "URL фида"
+            }
+          }
+        }
+      }
+    },
+    "host_feed_add_info": {
+      "path": "/user/{user_id}/hosts/{host_id}/feeds/add/info/",
+      "method": "GET",
+      "description": "Получение статуса асинхронной загрузки фида",
+      "parameters": {
+        "user_id": {
+          "type": "string",
+          "required": true,
+          "description": "Идентификатор пользователя"
+        },
+        "host_id": {
+          "type": "string",
+          "required": true,
+          "description": "Идентификатор сайта"
+        }
+      }
+    },
+    "host_feeds_batch_add": {
+      "path": "/user/{user_id}/hosts/{host_id}/feeds/batch/add/",
+      "method": "POST",
+      "description": "Загрузка нескольких фидов",
+      "parameters": {
+        "user_id": {
+          "type": "string",
+          "required": true,
+          "description": "Идентификатор пользователя"
+        },
+        "host_id": {
+          "type": "string",
+          "required": true,
+          "description": "Идентификатор сайта"
+        },
+        "feeds": {
+          "type": "array",
+          "required": true,
+          "description": "Список фидов"
+        }
+      }
+    },
+    "host_feeds_batch_remove": {
+      "path": "/user/{user_id}/hosts/{host_id}/feeds/batch/remove/",
+      "method": "POST",
+      "description": "Удаление нескольких фидов",
+      "parameters": {
+        "user_id": {
+          "type": "string",
+          "required": true,
+          "description": "Идентификатор пользователя"
+        },
+        "host_id": {
+          "type": "string",
+          "required": true,
+          "description": "Идентификатор сайта"
+        },
+        "feeds": {
+          "type": "array",
+          "required": true,
+          "description": "Список фидов для удаления"
+        }
+      }
+    }
+  }
+}

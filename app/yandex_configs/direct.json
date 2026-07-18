@@ -1,0 +1,804 @@
+{
+  "base_url": "https://api.direct.yandex.com/json/v5",
+  "sandbox_url": "https://api-sandbox.direct.yandex.com/json/v5",
+  "auth": {
+    "token": "${YANDEX_DIRECT_TOKEN}"
+  },
+  "default_headers": {
+    "Accept-Language": "ru",
+    "Client-Login": "${YANDEX_DIRECT_CLIENT_LOGIN}",
+    "processingMode": "auto",
+    "returnMoneyInMicros": "false",
+    "skipReportHeader": "true",
+    "skipColumnHeader": "true",
+    "skipReportSummary": "true"
+  },
+  "resources": {
+    "reports": {
+      "path": "/reports",
+      "method": "POST",
+      "description": "Сервис Reports - получение статистики по аккаунту Директа",
+      "parameters": {
+        "SelectionCriteria": {
+          "type": "object",
+          "required": true,
+          "description": "Критерии отбора данных для отчета"
+        },
+        "FieldNames": {
+          "type": "array",
+          "required": true,
+          "description": "Имена полей (столбцов), которые будут присутствовать в отчете"
+        },
+        "ReportName": {
+          "type": "string",
+          "required": true,
+          "description": "Название отчета. Должно быть уникальным для пользователя в режиме офлайн"
+        },
+        "ReportType": {
+          "type": "string",
+          "required": true,
+          "description": "Тип отчета",
+          "enum": [
+            "ACCOUNT_PERFORMANCE_REPORT",
+            "CAMPAIGN_PERFORMANCE_REPORT",
+            "ADGROUP_PERFORMANCE_REPORT",
+            "AD_PERFORMANCE_REPORT",
+            "CRITERIA_PERFORMANCE_REPORT",
+            "CUSTOM_REPORT",
+            "REACH_AND_FREQUENCY_PERFORMANCE_REPORT",
+            "SEARCH_QUERY_PERFORMANCE_REPORT"
+          ]
+        },
+        "DateRangeType": {
+          "type": "string",
+          "required": true,
+          "description": "Период, за который формируется отчет",
+          "enum": [
+            "TODAY", "YESTERDAY", "LAST_3_DAYS", "LAST_5_DAYS",
+            "LAST_7_DAYS", "LAST_14_DAYS", "LAST_30_DAYS", "LAST_90_DAYS",
+            "LAST_365_DAYS", "THIS_WEEK_MON_TODAY", "THIS_WEEK_SUN_TODAY",
+            "LAST_WEEK", "LAST_BUSINESS_WEEK", "LAST_WEEK_SUN_SAT",
+            "THIS_MONTH", "LAST_MONTH", "ALL_TIME", "CUSTOM_DATE", "AUTO"
+          ]
+        },
+        "Format": {
+          "type": "string",
+          "required": true,
+          "description": "Формат отчета (только TSV)",
+          "enum": ["TSV"]
+        },
+        "IncludeVAT": {
+          "type": "string",
+          "required": true,
+          "description": "Включать ли НДС в денежные суммы",
+          "enum": ["YES", "NO"]
+        },
+        "IncludeDiscount": {
+          "type": "string",
+          "required": false,
+          "description": "Учитывать ли скидку (устарело с 01.09.2015)",
+          "enum": ["YES", "NO"]
+        },
+        "Goals": {
+          "type": "array",
+          "required": false,
+          "description": "Идентификаторы целей Яндекс Метрики (не более 10)"
+        },
+        "AttributionModels": {
+          "type": "array",
+          "required": false,
+          "description": "Модели атрибуции",
+          "enum": ["FCCD", "LC", "LSCCD", "AUTO"]
+        },
+        "Page": {
+          "type": "object",
+          "required": false,
+          "description": "Ограничение на количество строк (максимум 1 000 000)",
+          "properties": {
+            "Limit": {"type": "integer", "required": true},
+            "Offset": {"type": "integer", "required": false}
+          }
+        },
+        "OrderBy": {
+          "type": "array",
+          "required": false,
+          "description": "Сортировка строк в отчете"
+        }
+      }
+    },
+    "campaigns": {
+      "path": "/campaigns",
+      "method": "POST",
+      "description": "Управление кампаниями",
+      "methods": {
+        "add": {"method": "POST", "description": "Добавление кампаний"},
+        "delete": {"method": "POST", "description": "Удаление кампаний"},
+        "get": {"method": "POST", "description": "Получение параметров кампаний"},
+        "update": {"method": "POST", "description": "Изменение параметров кампаний"},
+        "archive": {"method": "POST", "description": "Архивация кампаний"},
+        "unarchive": {"method": "POST", "description": "Разархивация кампаний"},
+        "resume": {"method": "POST", "description": "Возобновление показов"},
+        "suspend": {"method": "POST", "description": "Приостановка показов"}
+      },
+      "parameters": {
+        "selection": {
+          "type": "object",
+          "required": false,
+          "description": "Критерии отбора кампаний"
+        },
+        "fieldNames": {
+          "type": "array",
+          "required": true,
+          "description": "Имена полей для включения в ответ"
+        },
+        "page": {
+          "type": "object",
+          "required": false,
+          "description": "Параметры пагинации"
+        }
+      }
+    },
+    "adgroups": {
+      "path": "/adgroups",
+      "method": "POST",
+      "description": "Управление группами объявлений",
+      "methods": {
+        "add": {"method": "POST", "description": "Добавление групп объявлений"},
+        "delete": {"method": "POST", "description": "Удаление групп объявлений"},
+        "get": {"method": "POST", "description": "Получение параметров групп объявлений"},
+        "update": {"method": "POST", "description": "Изменение параметров групп объявлений"}
+      },
+      "parameters": {
+        "selection": {
+          "type": "object",
+          "required": false,
+          "description": "Критерии отбора групп объявлений"
+        },
+        "fieldNames": {
+          "type": "array",
+          "required": true,
+          "description": "Имена полей для включения в ответ"
+        },
+        "page": {
+          "type": "object",
+          "required": false,
+          "description": "Параметры пагинации"
+        }
+      }
+    },
+    "ads": {
+      "path": "/ads",
+      "method": "POST",
+      "description": "Управление объявлениями",
+      "methods": {
+        "add": {"method": "POST", "description": "Добавление объявлений"},
+        "delete": {"method": "POST", "description": "Удаление объявлений"},
+        "get": {"method": "POST", "description": "Получение параметров объявлений"},
+        "update": {"method": "POST", "description": "Изменение параметров объявлений"},
+        "archive": {"method": "POST", "description": "Архивация объявлений"},
+        "unarchive": {"method": "POST", "description": "Разархивация объявлений"},
+        "resume": {"method": "POST", "description": "Возобновление показов"},
+        "suspend": {"method": "POST", "description": "Приостановка показов"},
+        "moderate": {"method": "POST", "description": "Отправка объявлений на модерацию"}
+      },
+      "parameters": {
+        "selection": {
+          "type": "object",
+          "required": false,
+          "description": "Критерии отбора объявлений"
+        },
+        "fieldNames": {
+          "type": "array",
+          "required": true,
+          "description": "Имена полей для включения в ответ"
+        },
+        "page": {
+          "type": "object",
+          "required": false,
+          "description": "Параметры пагинации"
+        }
+      }
+    },
+    "keywords": {
+      "path": "/keywords",
+      "method": "POST",
+      "description": "Управление ключевыми фразами и автотаргетингами",
+      "methods": {
+        "add": {"method": "POST", "description": "Добавление ключевых фраз"},
+        "delete": {"method": "POST", "description": "Удаление ключевых фраз"},
+        "get": {"method": "POST", "description": "Получение параметров ключевых фраз"},
+        "update": {"method": "POST", "description": "Изменение параметров ключевых фраз"},
+        "resume": {"method": "POST", "description": "Возобновление показов"},
+        "suspend": {"method": "POST", "description": "Приостановка показов"}
+      },
+      "parameters": {
+        "selection": {
+          "type": "object",
+          "required": false,
+          "description": "Критерии отбора ключевых фраз"
+        },
+        "fieldNames": {
+          "type": "array",
+          "required": true,
+          "description": "Имена полей для включения в ответ"
+        },
+        "page": {
+          "type": "object",
+          "required": false,
+          "description": "Параметры пагинации"
+        }
+      }
+    },
+    "bids": {
+      "path": "/bids",
+      "method": "POST",
+      "description": "Управление ставками",
+      "methods": {
+        "get": {"method": "POST", "description": "Получение ставок"},
+        "set": {"method": "POST", "description": "Установка ставок"},
+        "setAuto": {"method": "POST", "description": "Автоматическое управление ставками"}
+      },
+      "parameters": {
+        "selection": {
+          "type": "object",
+          "required": false,
+          "description": "Критерии отбора"
+        },
+        "fieldNames": {
+          "type": "array",
+          "required": true,
+          "description": "Имена полей для включения в ответ"
+        }
+      }
+    },
+    "keywordbids": {
+      "path": "/keywordbids",
+      "method": "POST",
+      "description": "Управление ставками по ключевым фразам",
+      "methods": {
+        "get": {"method": "POST", "description": "Получение ставок"},
+        "set": {"method": "POST", "description": "Установка ставок"},
+        "setAuto": {"method": "POST", "description": "Автоматическое управление ставками"}
+      },
+      "parameters": {
+        "selection": {
+          "type": "object",
+          "required": false,
+          "description": "Критерии отбора"
+        },
+        "fieldNames": {
+          "type": "array",
+          "required": true,
+          "description": "Имена полей для включения в ответ"
+        }
+      }
+    },
+    "bidmodifiers": {
+      "path": "/bidmodifiers",
+      "method": "POST",
+      "description": "Управление корректировками ставок",
+      "methods": {
+        "add": {"method": "POST", "description": "Добавление корректировок"},
+        "delete": {"method": "POST", "description": "Удаление корректировок"},
+        "get": {"method": "POST", "description": "Получение корректировок"},
+        "set": {"method": "POST", "description": "Установка корректировок"}
+      },
+      "parameters": {
+        "selection": {
+          "type": "object",
+          "required": false,
+          "description": "Критерии отбора"
+        },
+        "fieldNames": {
+          "type": "array",
+          "required": true,
+          "description": "Имена полей для включения в ответ"
+        }
+      }
+    },
+    "negativekeywordsharedsets": {
+      "path": "/negativekeywordsharedsets",
+      "method": "POST",
+      "description": "Управление наборами минус-фраз",
+      "methods": {
+        "add": {"method": "POST", "description": "Добавление наборов"},
+        "delete": {"method": "POST", "description": "Удаление наборов"},
+        "get": {"method": "POST", "description": "Получение наборов"},
+        "update": {"method": "POST", "description": "Изменение наборов"}
+      },
+      "parameters": {
+        "selection": {
+          "type": "object",
+          "required": false,
+          "description": "Критерии отбора"
+        },
+        "fieldNames": {
+          "type": "array",
+          "required": true,
+          "description": "Имена полей для включения в ответ"
+        }
+      }
+    },
+    "keywordsresearch": {
+      "path": "/keywordsresearch",
+      "method": "POST",
+      "description": "Предобработка ключевых фраз",
+      "methods": {
+        "deduplicate": {"method": "POST", "description": "Дедупликация ключевых фраз"},
+        "hasSearchVolume": {"method": "POST", "description": "Проверка наличия объема поиска"}
+      },
+      "parameters": {
+        "keywords": {
+          "type": "array",
+          "required": true,
+          "description": "Список ключевых фраз"
+        }
+      }
+    },
+    "businesses": {
+      "path": "/businesses",
+      "method": "POST",
+      "description": "Получение профилей организаций",
+      "methods": {
+        "get": {"method": "POST", "description": "Получение профилей"}
+      },
+      "parameters": {
+        "selection": {
+          "type": "object",
+          "required": false,
+          "description": "Критерии отбора"
+        },
+        "fieldNames": {
+          "type": "array",
+          "required": true,
+          "description": "Имена полей для включения в ответ"
+        },
+        "page": {
+          "type": "object",
+          "required": false,
+          "description": "Параметры пагинации"
+        }
+      }
+    },
+    "adimages": {
+      "path": "/adimages",
+      "method": "POST",
+      "description": "Операции с изображениями",
+      "methods": {
+        "add": {"method": "POST", "description": "Добавление изображений"},
+        "delete": {"method": "POST", "description": "Удаление изображений"},
+        "get": {"method": "POST", "description": "Получение изображений"}
+      },
+      "parameters": {
+        "selection": {
+          "type": "object",
+          "required": false,
+          "description": "Критерии отбора"
+        },
+        "fieldNames": {
+          "type": "array",
+          "required": true,
+          "description": "Имена полей для включения в ответ"
+        },
+        "page": {
+          "type": "object",
+          "required": false,
+          "description": "Параметры пагинации"
+        }
+      }
+    },
+    "creatives": {
+      "path": "/creatives",
+      "method": "POST",
+      "description": "Получение креативов",
+      "methods": {
+        "add": {"method": "POST", "description": "Добавление креативов"},
+        "get": {"method": "POST", "description": "Получение креативов"}
+      },
+      "parameters": {
+        "selection": {
+          "type": "object",
+          "required": false,
+          "description": "Критерии отбора"
+        },
+        "fieldNames": {
+          "type": "array",
+          "required": true,
+          "description": "Имена полей для включения в ответ"
+        },
+        "page": {
+          "type": "object",
+          "required": false,
+          "description": "Параметры пагинации"
+        }
+      }
+    },
+    "advideos": {
+      "path": "/advideos",
+      "method": "POST",
+      "description": "Операции с видео",
+      "methods": {
+        "add": {"method": "POST", "description": "Добавление видео"},
+        "get": {"method": "POST", "description": "Получение видео"}
+      },
+      "parameters": {
+        "selection": {
+          "type": "object",
+          "required": false,
+          "description": "Критерии отбора"
+        },
+        "fieldNames": {
+          "type": "array",
+          "required": true,
+          "description": "Имена полей для включения в ответ"
+        },
+        "page": {
+          "type": "object",
+          "required": false,
+          "description": "Параметры пагинации"
+        }
+      }
+    },
+    "turbopages": {
+      "path": "/turbopages",
+      "method": "POST",
+      "description": "Получение параметров Турбо-страниц",
+      "methods": {
+        "get": {"method": "POST", "description": "Получение параметров"}
+      },
+      "parameters": {
+        "selection": {
+          "type": "object",
+          "required": false,
+          "description": "Критерии отбора"
+        },
+        "fieldNames": {
+          "type": "array",
+          "required": true,
+          "description": "Имена полей для включения в ответ"
+        },
+        "page": {
+          "type": "object",
+          "required": false,
+          "description": "Параметры пагинации"
+        }
+      }
+    },
+    "leads": {
+      "path": "/leads",
+      "method": "POST",
+      "description": "Получение данных из форм на Турбо-страницах",
+      "methods": {
+        "get": {"method": "POST", "description": "Получение данных"}
+      },
+      "parameters": {
+        "selection": {
+          "type": "object",
+          "required": false,
+          "description": "Критерии отбора"
+        },
+        "fieldNames": {
+          "type": "array",
+          "required": true,
+          "description": "Имена полей для включения в ответ"
+        },
+        "page": {
+          "type": "object",
+          "required": false,
+          "description": "Параметры пагинации"
+        }
+      }
+    },
+    "sitelinks": {
+      "path": "/sitelinks",
+      "method": "POST",
+      "description": "Операции с быстрыми ссылками",
+      "methods": {
+        "add": {"method": "POST", "description": "Добавление быстрых ссылок"},
+        "delete": {"method": "POST", "description": "Удаление быстрых ссылок"},
+        "get": {"method": "POST", "description": "Получение быстрых ссылок"}
+      },
+      "parameters": {
+        "selection": {
+          "type": "object",
+          "required": false,
+          "description": "Критерии отбора"
+        },
+        "fieldNames": {
+          "type": "array",
+          "required": true,
+          "description": "Имена полей для включения в ответ"
+        },
+        "page": {
+          "type": "object",
+          "required": false,
+          "description": "Параметры пагинации"
+        }
+      }
+    },
+    "adextensions": {
+      "path": "/adextensions",
+      "method": "POST",
+      "description": "Операции с расширениями объявлений",
+      "methods": {
+        "add": {"method": "POST", "description": "Добавление расширений"},
+        "delete": {"method": "POST", "description": "Удаление расширений"},
+        "get": {"method": "POST", "description": "Получение расширений"}
+      },
+      "parameters": {
+        "selection": {
+          "type": "object",
+          "required": false,
+          "description": "Критерии отбора"
+        },
+        "fieldNames": {
+          "type": "array",
+          "required": true,
+          "description": "Имена полей для включения в ответ"
+        },
+        "page": {
+          "type": "object",
+          "required": false,
+          "description": "Параметры пагинации"
+        }
+      }
+    },
+    "audiencetargets": {
+      "path": "/audiencetargets",
+      "method": "POST",
+      "description": "Управление условиями нацеливания на аудиторию",
+      "methods": {
+        "add": {"method": "POST", "description": "Добавление условий"},
+        "delete": {"method": "POST", "description": "Удаление условий"},
+        "get": {"method": "POST", "description": "Получение условий"},
+        "resume": {"method": "POST", "description": "Возобновление показов"},
+        "setBids": {"method": "POST", "description": "Установка ставок"},
+        "suspend": {"method": "POST", "description": "Приостановка показов"}
+      },
+      "parameters": {
+        "selection": {
+          "type": "object",
+          "required": false,
+          "description": "Критерии отбора"
+        },
+        "fieldNames": {
+          "type": "array",
+          "required": true,
+          "description": "Имена полей для включения в ответ"
+        },
+        "page": {
+          "type": "object",
+          "required": false,
+          "description": "Параметры пагинации"
+        }
+      }
+    },
+    "retargetinglists": {
+      "path": "/retargetinglists",
+      "method": "POST",
+      "description": "Управление условиями ретаргетинга и подбора аудитории",
+      "methods": {
+        "add": {"method": "POST", "description": "Добавление условий"},
+        "delete": {"method": "POST", "description": "Удаление условий"},
+        "get": {"method": "POST", "description": "Получение условий"},
+        "update": {"method": "POST", "description": "Изменение условий"}
+      },
+      "parameters": {
+        "selection": {
+          "type": "object",
+          "required": false,
+          "description": "Критерии отбора"
+        },
+        "fieldNames": {
+          "type": "array",
+          "required": true,
+          "description": "Имена полей для включения в ответ"
+        },
+        "page": {
+          "type": "object",
+          "required": false,
+          "description": "Параметры пагинации"
+        }
+      }
+    },
+    "clients": {
+      "path": "/clients",
+      "method": "POST",
+      "description": "Управление параметрами рекламодателя и настройками пользователя",
+      "methods": {
+        "get": {"method": "POST", "description": "Получение параметров"},
+        "update": {"method": "POST", "description": "Изменение параметров"}
+      },
+      "parameters": {
+        "selection": {
+          "type": "object",
+          "required": false,
+          "description": "Критерии отбора"
+        },
+        "fieldNames": {
+          "type": "array",
+          "required": true,
+          "description": "Имена полей для включения в ответ"
+        },
+        "page": {
+          "type": "object",
+          "required": false,
+          "description": "Параметры пагинации"
+        }
+      }
+    },
+    "agencyclients": {
+      "path": "/agencyclients",
+      "method": "POST",
+      "description": "Управление клиентами агентства",
+      "methods": {
+        "add": {"method": "POST", "description": "Добавление клиентов"},
+        "get": {"method": "POST", "description": "Получение клиентов"},
+        "update": {"method": "POST", "description": "Изменение клиентов"}
+      },
+      "parameters": {
+        "selection": {
+          "type": "object",
+          "required": false,
+          "description": "Критерии отбора"
+        },
+        "fieldNames": {
+          "type": "array",
+          "required": true,
+          "description": "Имена полей для включения в ответ"
+        },
+        "page": {
+          "type": "object",
+          "required": false,
+          "description": "Параметры пагинации"
+        }
+      }
+    },
+    "feeds": {
+      "path": "/feeds",
+      "method": "POST",
+      "description": "Операции с фидами",
+      "methods": {
+        "add": {"method": "POST", "description": "Добавление фидов"},
+        "delete": {"method": "POST", "description": "Удаление фидов"},
+        "get": {"method": "POST", "description": "Получение фидов"},
+        "update": {"method": "POST", "description": "Изменение фидов"}
+      },
+      "parameters": {
+        "selection": {
+          "type": "object",
+          "required": false,
+          "description": "Критерии отбора"
+        },
+        "fieldNames": {
+          "type": "array",
+          "required": true,
+          "description": "Имена полей для включения в ответ"
+        },
+        "page": {
+          "type": "object",
+          "required": false,
+          "description": "Параметры пагинации"
+        }
+      }
+    },
+    "dictionaries": {
+      "path": "/dictionaries",
+      "method": "POST",
+      "description": "Получение справочных данных",
+      "methods": {
+        "get": {"method": "POST", "description": "Получение справочных данных"}
+      },
+      "parameters": {
+        "dictionaryNames": {
+          "type": "array",
+          "required": true,
+          "description": "Имена справочников"
+        }
+      }
+    },
+    "changes": {
+      "path": "/changes",
+      "method": "POST",
+      "description": "Проверка наличия изменений",
+      "methods": {
+        "check": {"method": "POST", "description": "Проверка изменений"},
+        "checkCampaigns": {"method": "POST", "description": "Проверка изменений в кампаниях"},
+        "checkDictionaries": {"method": "POST", "description": "Проверка изменений в справочниках"}
+      },
+      "parameters": {
+        "selection": {
+          "type": "object",
+          "required": false,
+          "description": "Критерии отбора"
+        },
+        "fieldNames": {
+          "type": "array",
+          "required": true,
+          "description": "Имена полей для включения в ответ"
+        }
+      }
+    },
+    "strategies": {
+      "path": "/strategies",
+      "method": "POST",
+      "description": "Операции с пакетными стратегиями",
+      "methods": {
+        "get": {"method": "POST", "description": "Получение стратегий"},
+        "set": {"method": "POST", "description": "Установка стратегий"}
+      },
+      "parameters": {
+        "selection": {
+          "type": "object",
+          "required": false,
+          "description": "Критерии отбора"
+        },
+        "fieldNames": {
+          "type": "array",
+          "required": true,
+          "description": "Имена полей для включения в ответ"
+        }
+      }
+    },
+    "accountlogins": {
+      "path": "/accountlogins",
+      "method": "POST",
+      "description": "Получение списка логинов, связанных с аккаунтом",
+      "methods": {
+        "get": {"method": "POST", "description": "Получение логинов"}
+      },
+      "parameters": {
+        "fieldNames": {
+          "type": "array",
+          "required": true,
+          "description": "Имена полей для включения в ответ"
+        }
+      }
+    },
+    "balance": {
+      "path": "/balance",
+      "method": "POST",
+      "description": "Получение информации о балансе",
+      "methods": {
+        "get": {"method": "POST", "description": "Получение баланса"}
+      },
+      "parameters": {
+        "fieldNames": {
+          "type": "array",
+          "required": true,
+          "description": "Имена полей для включения в ответ"
+        }
+      }
+    },
+    "units": {
+      "path": "/units",
+      "method": "POST",
+      "description": "Получение информации об использовании баллов",
+      "methods": {
+        "get": {"method": "POST", "description": "Получение информации"}
+      },
+      "parameters": {
+        "fieldNames": {
+          "type": "array",
+          "required": true,
+          "description": "Имена полей для включения в ответ"
+        }
+      }
+    },
+    "grants": {
+      "path": "/grants",
+      "method": "POST",
+      "description": "Получение списка грантов",
+      "methods": {
+        "get": {"method": "POST", "description": "Получение грантов"}
+      },
+      "parameters": {
+        "fieldNames": {
+          "type": "array",
+          "required": true,
+          "description": "Имена полей для включения в ответ"
+        }
+      }
+    }
+  }
+}

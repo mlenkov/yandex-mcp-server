@@ -1,0 +1,730 @@
+{
+  "base_url": "https://api.media.metrika.yandex.net",
+  "auth": {
+    "token": "${YANDEX_ADMETRICA_TOKEN}"
+  },
+  "default_headers": {
+    "Content-Type": "application/json"
+  },
+  "resources": {
+    "campaigns": {
+      "path": "/v1/campaigns",
+      "method": "GET",
+      "description": "Получение списка кампаний",
+      "parameters": {
+        "limit": {
+          "type": "integer",
+          "required": false,
+          "description": "Количество кампаний на странице"
+        },
+        "offset": {
+          "type": "integer",
+          "required": false,
+          "description": "Смещение"
+        },
+        "sort": {
+          "type": "string",
+          "required": false,
+          "description": "Сортировка"
+        },
+        "filter": {
+          "type": "string",
+          "required": false,
+          "description": "Фильтр"
+        }
+      }
+    },
+    "campaign": {
+      "path": "/v1/campaigns/{campaign_id}",
+      "method": "GET",
+      "description": "Получение информации о кампании",
+      "parameters": {
+        "campaign_id": {
+          "type": "integer",
+          "required": true,
+          "description": "Идентификатор кампании"
+        }
+      }
+    },
+    "campaign_create": {
+      "path": "/v1/campaigns",
+      "method": "POST",
+      "description": "Создание кампании",
+      "parameters": {
+        "campaign": {
+          "type": "object",
+          "required": true,
+          "description": "Параметры кампании",
+          "properties": {
+            "name": {
+              "type": "string",
+              "required": true,
+              "description": "Название кампании"
+            },
+            "advertiser_id": {
+              "type": "integer",
+              "required": true,
+              "description": "Идентификатор рекламодателя"
+            },
+            "status": {
+              "type": "string",
+              "required": false,
+              "description": "Статус кампании"
+            },
+            "budget": {
+              "type": "object",
+              "required": false,
+              "description": "Бюджет кампании"
+            }
+          }
+        }
+      }
+    },
+    "campaign_update": {
+      "path": "/v1/campaigns/{campaign_id}",
+      "method": "PUT",
+      "description": "Изменение кампании",
+      "parameters": {
+        "campaign_id": {
+          "type": "integer",
+          "required": true,
+          "description": "Идентификатор кампании"
+        },
+        "campaign": {
+          "type": "object",
+          "required": true,
+          "description": "Параметры кампании для изменения"
+        }
+      }
+    },
+    "campaign_delete": {
+      "path": "/v1/campaigns/{campaign_id}",
+      "method": "DELETE",
+      "description": "Удаление кампании",
+      "parameters": {
+        "campaign_id": {
+          "type": "integer",
+          "required": true,
+          "description": "Идентификатор кампании"
+        }
+      }
+    },
+    "campaign_copy": {
+      "path": "/v1/campaigns/{campaign_id}/copy",
+      "method": "POST",
+      "description": "Копирование кампании",
+      "parameters": {
+        "campaign_id": {
+          "type": "integer",
+          "required": true,
+          "description": "Идентификатор кампании"
+        },
+        "name": {
+          "type": "string",
+          "required": false,
+          "description": "Название новой кампании"
+        }
+      }
+    },
+    "advertisers": {
+      "path": "/v1/advertisers",
+      "method": "GET",
+      "description": "Получение списка рекламодателей",
+      "parameters": {
+        "limit": {
+          "type": "integer",
+          "required": false,
+          "description": "Количество рекламодателей на странице"
+        },
+        "offset": {
+          "type": "integer",
+          "required": false,
+          "description": "Смещение"
+        },
+        "sort": {
+          "type": "string",
+          "required": false,
+          "description": "Сортировка"
+        },
+        "filter": {
+          "type": "string",
+          "required": false,
+          "description": "Фильтр"
+        }
+      }
+    },
+    "advertiser": {
+      "path": "/v1/advertisers/{advertiser_id}",
+      "method": "GET",
+      "description": "Получение информации о рекламодателе",
+      "parameters": {
+        "advertiser_id": {
+          "type": "integer",
+          "required": true,
+          "description": "Идентификатор рекламодателя"
+        }
+      }
+    },
+    "advertiser_create": {
+      "path": "/v1/advertisers",
+      "method": "POST",
+      "description": "Создание рекламодателя",
+      "parameters": {
+        "advertiser": {
+          "type": "object",
+          "required": true,
+          "description": "Параметры рекламодателя",
+          "properties": {
+            "name": {
+              "type": "string",
+              "required": true,
+              "description": "Название рекламодателя"
+            },
+            "contact_email": {
+              "type": "string",
+              "required": false,
+              "description": "Email контакта"
+            },
+            "contact_name": {
+              "type": "string",
+              "required": false,
+              "description": "Имя контакта"
+            },
+            "contact_phone": {
+              "type": "string",
+              "required": false,
+              "description": "Телефон контакта"
+            }
+          }
+        }
+      }
+    },
+    "advertiser_update": {
+      "path": "/v1/advertisers/{advertiser_id}",
+      "method": "PUT",
+      "description": "Изменение рекламодателя",
+      "parameters": {
+        "advertiser_id": {
+          "type": "integer",
+          "required": true,
+          "description": "Идентификатор рекламодателя"
+        },
+        "advertiser": {
+          "type": "object",
+          "required": true,
+          "description": "Параметры рекламодателя для изменения"
+        }
+      }
+    },
+    "advertiser_delete": {
+      "path": "/v1/advertisers/{advertiser_id}",
+      "method": "DELETE",
+      "description": "Удаление рекламодателя",
+      "parameters": {
+        "advertiser_id": {
+          "type": "integer",
+          "required": true,
+          "description": "Идентификатор рекламодателя"
+        }
+      }
+    },
+    "goals": {
+      "path": "/v1/advertisers/{advertiser_id}/goals",
+      "method": "GET",
+      "description": "Получение списка целей рекламодателя",
+      "parameters": {
+        "advertiser_id": {
+          "type": "integer",
+          "required": true,
+          "description": "Идентификатор рекламодателя"
+        },
+        "limit": {
+          "type": "integer",
+          "required": false,
+          "description": "Количество целей на странице"
+        },
+        "offset": {
+          "type": "integer",
+          "required": false,
+          "description": "Смещение"
+        }
+      }
+    },
+    "goal": {
+      "path": "/v1/advertisers/{advertiser_id}/goals/{goal_id}",
+      "method": "GET",
+      "description": "Получение информации о цели",
+      "parameters": {
+        "advertiser_id": {
+          "type": "integer",
+          "required": true,
+          "description": "Идентификатор рекламодателя"
+        },
+        "goal_id": {
+          "type": "integer",
+          "required": true,
+          "description": "Идентификатор цели"
+        }
+      }
+    },
+    "goal_create": {
+      "path": "/v1/advertisers/{advertiser_id}/goals",
+      "method": "POST",
+      "description": "Создание цели",
+      "parameters": {
+        "advertiser_id": {
+          "type": "integer",
+          "required": true,
+          "description": "Идентификатор рекламодателя"
+        },
+        "goal": {
+          "type": "object",
+          "required": true,
+          "description": "Параметры цели",
+          "properties": {
+            "name": {
+              "type": "string",
+              "required": true,
+              "description": "Название цели"
+            },
+            "type": {
+              "type": "string",
+              "required": true,
+              "description": "Тип цели",
+              "enum": ["url", "action", "number", "visit_duration"]
+            },
+            "conditions": {
+              "type": "array",
+              "required": false,
+              "description": "Условия цели"
+            }
+          }
+        }
+      }
+    },
+    "goal_update": {
+      "path": "/v1/advertisers/{advertiser_id}/goals/{goal_id}",
+      "method": "PUT",
+      "description": "Изменение цели",
+      "parameters": {
+        "advertiser_id": {
+          "type": "integer",
+          "required": true,
+          "description": "Идентификатор рекламодателя"
+        },
+        "goal_id": {
+          "type": "integer",
+          "required": true,
+          "description": "Идентификатор цели"
+        },
+        "goal": {
+          "type": "object",
+          "required": true,
+          "description": "Параметры цели для изменения"
+        }
+      }
+    },
+    "goal_delete": {
+      "path": "/v1/advertisers/{advertiser_id}/goals/{goal_id}",
+      "method": "DELETE",
+      "description": "Удаление цели",
+      "parameters": {
+        "advertiser_id": {
+          "type": "integer",
+          "required": true,
+          "description": "Идентификатор рекламодателя"
+        },
+        "goal_id": {
+          "type": "integer",
+          "required": true,
+          "description": "Идентификатор цели"
+        }
+      }
+    },
+    "landing_pages": {
+      "path": "/v1/advertisers/{advertiser_id}/landing-pages",
+      "method": "GET",
+      "description": "Получение списка посадочных страниц",
+      "parameters": {
+        "advertiser_id": {
+          "type": "integer",
+          "required": true,
+          "description": "Идентификатор рекламодателя"
+        },
+        "limit": {
+          "type": "integer",
+          "required": false,
+          "description": "Количество страниц на странице"
+        },
+        "offset": {
+          "type": "integer",
+          "required": false,
+          "description": "Смещение"
+        }
+      }
+    },
+    "landing_page": {
+      "path": "/v1/advertisers/{advertiser_id}/landing-pages/{landing_page_id}",
+      "method": "GET",
+      "description": "Получение информации о посадочной странице",
+      "parameters": {
+        "advertiser_id": {
+          "type": "integer",
+          "required": true,
+          "description": "Идентификатор рекламодателя"
+        },
+        "landing_page_id": {
+          "type": "integer",
+          "required": true,
+          "description": "Идентификатор посадочной страницы"
+        }
+      }
+    },
+    "landing_page_create": {
+      "path": "/v1/advertisers/{advertiser_id}/landing-pages",
+      "method": "POST",
+      "description": "Создание посадочной страницы",
+      "parameters": {
+        "advertiser_id": {
+          "type": "integer",
+          "required": true,
+          "description": "Идентификатор рекламодателя"
+        },
+        "landing_page": {
+          "type": "object",
+          "required": true,
+          "description": "Параметры посадочной страницы",
+          "properties": {
+            "url": {
+              "type": "string",
+              "required": true,
+              "description": "URL посадочной страницы"
+            },
+            "name": {
+              "type": "string",
+              "required": false,
+              "description": "Название посадочной страницы"
+            }
+          }
+        }
+      }
+    },
+    "landing_page_update": {
+      "path": "/v1/advertisers/{advertiser_id}/landing-pages/{landing_page_id}",
+      "method": "PUT",
+      "description": "Изменение посадочной страницы",
+      "parameters": {
+        "advertiser_id": {
+          "type": "integer",
+          "required": true,
+          "description": "Идентификатор рекламодателя"
+        },
+        "landing_page_id": {
+          "type": "integer",
+          "required": true,
+          "description": "Идентификатор посадочной страницы"
+        },
+        "landing_page": {
+          "type": "object",
+          "required": true,
+          "description": "Параметры посадочной страницы для изменения"
+        }
+      }
+    },
+    "landing_page_delete": {
+      "path": "/v1/advertisers/{advertiser_id}/landing-pages/{landing_page_id}",
+      "method": "DELETE",
+      "description": "Удаление посадочной страницы",
+      "parameters": {
+        "advertiser_id": {
+          "type": "integer",
+          "required": true,
+          "description": "Идентификатор рекламодателя"
+        },
+        "landing_page_id": {
+          "type": "integer",
+          "required": true,
+          "description": "Идентификатор посадочной страницы"
+        }
+      }
+    },
+    "grants": {
+      "path": "/v1/advertisers/{advertiser_id}/grants",
+      "method": "GET",
+      "description": "Получение списка доступов к рекламодателю",
+      "parameters": {
+        "advertiser_id": {
+          "type": "integer",
+          "required": true,
+          "description": "Идентификатор рекламодателя"
+        }
+      }
+    },
+    "grant_create": {
+      "path": "/v1/advertisers/{advertiser_id}/grants",
+      "method": "POST",
+      "description": "Создание доступа к рекламодателю",
+      "parameters": {
+        "advertiser_id": {
+          "type": "integer",
+          "required": true,
+          "description": "Идентификатор рекламодателя"
+        },
+        "grant": {
+          "type": "object",
+          "required": true,
+          "description": "Параметры доступа",
+          "properties": {
+            "user_login": {
+              "type": "string",
+              "required": true,
+              "description": "Логин пользователя"
+            },
+            "perm": {
+              "type": "string",
+              "required": true,
+              "description": "Уровень доступа (view, edit)"
+            }
+          }
+        }
+      }
+    },
+    "grant_delete": {
+      "path": "/v1/advertisers/{advertiser_id}/grants/{user_login}",
+      "method": "DELETE",
+      "description": "Удаление доступа к рекламодателю",
+      "parameters": {
+        "advertiser_id": {
+          "type": "integer",
+          "required": true,
+          "description": "Идентификатор рекламодателя"
+        },
+        "user_login": {
+          "type": "string",
+          "required": true,
+          "description": "Логин пользователя"
+        }
+      }
+    },
+    "stat_data": {
+      "path": "/v1/stat/data",
+      "method": "GET",
+      "description": "Получение статистических данных (таблица)",
+      "parameters": {
+        "ids": {
+          "type": "integer",
+          "required": true,
+          "description": "Идентификатор кампании"
+        },
+        "metrics": {
+          "type": "string",
+          "required": true,
+          "description": "Метрики через запятую"
+        },
+        "dimensions": {
+          "type": "string",
+          "required": false,
+          "description": "Группировки через запятую"
+        },
+        "filters": {
+          "type": "string",
+          "required": false,
+          "description": "Фильтры данных"
+        },
+        "date1": {
+          "type": "string",
+          "required": false,
+          "description": "Начальная дата (YYYY-MM-DD)"
+        },
+        "date2": {
+          "type": "string",
+          "required": false,
+          "description": "Конечная дата (YYYY-MM-DD)"
+        },
+        "limit": {
+          "type": "integer",
+          "required": false,
+          "description": "Количество результатов"
+        },
+        "offset": {
+          "type": "integer",
+          "required": false,
+          "description": "Смещение"
+        },
+        "sort": {
+          "type": "string",
+          "required": false,
+          "description": "Сортировка"
+        }
+      }
+    },
+    "stat_data_drilldown": {
+      "path": "/v1/stat/data/drilldown",
+      "method": "GET",
+      "description": "Получение данных в древовидном отчете",
+      "parameters": {
+        "ids": {
+          "type": "integer",
+          "required": true,
+          "description": "Идентификатор кампании"
+        },
+        "metrics": {
+          "type": "string",
+          "required": true,
+          "description": "Метрики"
+        },
+        "dimensions": {
+          "type": "string",
+          "required": false,
+          "description": "Группировки"
+        },
+        "filters": {
+          "type": "string",
+          "required": false,
+          "description": "Фильтры"
+        },
+        "date1": {
+          "type": "string",
+          "required": false,
+          "description": "Начальная дата"
+        },
+        "date2": {
+          "type": "string",
+          "required": false,
+          "description": "Конечная дата"
+        },
+        "limit": {
+          "type": "integer",
+          "required": false,
+          "description": "Количество результатов"
+        },
+        "offset": {
+          "type": "integer",
+          "required": false,
+          "description": "Смещение"
+        }
+      }
+    },
+    "stat_data_bytime": {
+      "path": "/v1/stat/data/bytime",
+      "method": "GET",
+      "description": "Получение данных с разбивкой по времени",
+      "parameters": {
+        "ids": {
+          "type": "integer",
+          "required": true,
+          "description": "Идентификатор кампании"
+        },
+        "metrics": {
+          "type": "string",
+          "required": true,
+          "description": "Метрики"
+        },
+        "dimensions": {
+          "type": "string",
+          "required": false,
+          "description": "Группировки"
+        },
+        "filters": {
+          "type": "string",
+          "required": false,
+          "description": "Фильтры"
+        },
+        "date1": {
+          "type": "string",
+          "required": false,
+          "description": "Начальная дата"
+        },
+        "date2": {
+          "type": "string",
+          "required": false,
+          "description": "Конечная дата"
+        },
+        "limit": {
+          "type": "integer",
+          "required": false,
+          "description": "Количество результатов"
+        },
+        "offset": {
+          "type": "integer",
+          "required": false,
+          "description": "Смещение"
+        },
+        "interval": {
+          "type": "string",
+          "required": false,
+          "description": "Интервал группировки (day, week, month)"
+        }
+      }
+    },
+    "stat_summary": {
+      "path": "/v1/stat/summary",
+      "method": "GET",
+      "description": "Получение сводки по кампаниям",
+      "parameters": {
+        "ids": {
+          "type": "string",
+          "required": true,
+          "description": "Идентификаторы кампаний через запятую"
+        },
+        "date1": {
+          "type": "string",
+          "required": false,
+          "description": "Начальная дата"
+        },
+        "date2": {
+          "type": "string",
+          "required": false,
+          "description": "Конечная дата"
+        }
+      }
+    },
+    "stat_comparison": {
+      "path": "/v1/stat/comparison",
+      "method": "GET",
+      "description": "Сравнение сегментов данных",
+      "parameters": {
+        "ids": {
+          "type": "integer",
+          "required": true,
+          "description": "Идентификатор кампании"
+        },
+        "metrics": {
+          "type": "string",
+          "required": true,
+          "description": "Метрики"
+        },
+        "dimensions": {
+          "type": "string",
+          "required": false,
+          "description": "Группировки"
+        },
+        "filters": {
+          "type": "string",
+          "required": false,
+          "description": "Фильтры для сравнения"
+        },
+        "date1": {
+          "type": "string",
+          "required": false,
+          "description": "Начальная дата"
+        },
+        "date2": {
+          "type": "string",
+          "required": false,
+          "description": "Конечная дата"
+        },
+        "limit": {
+          "type": "integer",
+          "required": false,
+          "description": "Количество результатов"
+        },
+        "offset": {
+          "type": "integer",
+          "required": false,
+          "description": "Смещение"
+        }
+      }
+    }
+  }
+}

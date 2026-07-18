@@ -1,0 +1,16 @@
+name: yandex-mcp
+
+services:
+  yandex-mcp:
+    build: .
+    container_name: mais-yandex-mcp
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    env_file: .env
+    volumes:
+      - ./data:/app/data
+      - ./app/yandex_configs:/app/app/yandex_configs:ro
+    labels:
+      project: "mais"
+      service: "yandex-mcp"
