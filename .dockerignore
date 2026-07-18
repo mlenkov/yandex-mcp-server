@@ -1,0 +1,15 @@
+.git
+.gitignore
+.env
+.env.prod
+data/
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store

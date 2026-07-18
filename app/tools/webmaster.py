@@ -13,23 +13,32 @@ from app.apiforge_async import AsyncYandexClient
 async def get_webmaster_hosts(
     ctx: Context,
     account_id: Optional[int] = None,
+    limit: int = 100,
 ) -> dict:
     """List hosts in Yandex Webmaster.
 
     Args:
         account_id: Optional Yandex account ID.
             Falls back to the first active Webmaster account when omitted.
+        limit: Maximum number of hosts to return.
     """
     user_id = get_user_id_from_context(ctx)
 
     if account_id is None:
-        account_id, _ = await account_service.get_first_account_token(
-            user_id, ServiceType.webmaster
-        )
+        try:
+            account_id, _ = await account_service.get_first_account_token(
+                user_id, ServiceType.webmaster
+            )
+        except ValueError as e:
+            return {"error": True, "message": str(e)}
 
     client = AsyncYandexClient(ServiceType.webmaster, account_id)
     try:
         result = await client.request("hosts")
+        if isinstance(result, dict) and "hosts" in result:
+            result["hosts"] = result["hosts"][:limit]
         return result
+    except Exception as e:
+        return {"error": True, "message": f"Yandex Webmaster API error: {e}"}
     finally:
         await client.close()

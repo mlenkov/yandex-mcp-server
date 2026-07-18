@@ -6,7 +6,11 @@ from pathlib import Path
 from typing import Any, Optional
 
 from apiforge import AsyncApiForgeClient
-from apiforge.exceptions import ApiForgeAuthenticationError
+from apiforge.exceptions import (
+    ApiForgeRequestError,
+    ApiForgeAuthenticationError,
+    ApiForgeRateLimitError,
+)
 
 from app.models import ServiceType
 from app.services.account_service import account_service
@@ -47,6 +51,10 @@ class AsyncYandexClient:
         self._refreshed = False
 
     async def _ensure_client(self) -> AsyncApiForgeClient:
+        remaining = await account_service.get_token_expires_remaining(self.account_id)
+        if remaining < 300:
+            await account_service.refresh_account_token(self.account_id)
+
         if self._client is not None:
             return self._client
 
@@ -75,13 +83,45 @@ class AsyncYandexClient:
                 **kwargs,
             )
             return response.json()
-        except ApiForgeAuthenticationError:
+        except ApiForgeAuthenticationError as e:
             if self._refreshed:
-                raise
+                return {
+                    "status": "error",
+                    "yandex_api_error": True,
+                    "message": f"Yandex API returned {e.status_code}: token refresh failed",
+                    "suggestion": "Re-authorize the Yandex account via OAuth.",
+                }
             self._refreshed = True
-            new_token = await account_service.refresh_account_token(self.account_id)
+            try:
+                new_token = await account_service.refresh_account_token(self.account_id)
+            except Exception as refresh_err:
+                return {
+                    "status": "error",
+                    "yandex_api_error": True,
+                    "message": f"Token refresh failed: {refresh_err}",
+                    "suggestion": "Check YANDEX_CLIENT_ID and YANDEX_CLIENT_SECRET in .env",
+                }
             self._client = None
             return await self.request(resource, params, data, **kwargs)
+        except ApiForgeRateLimitError as e:
+            return {
+                "status": "error",
+                "yandex_api_error": True,
+                "message": f"Yandex API rate limit exceeded (retry after {e.retry_after}s)",
+                "suggestion": "Wait before making more requests.",
+            }
+        except ApiForgeRequestError as e:
+            hint = "Check your request parameters against Yandex API documentation."
+            if e.status_code == 400:
+                hint = "Some parameters are invalid or missing."
+            elif e.status_code == 429:
+                hint = "Rate limit hit. Reduce request frequency."
+            return {
+                "status": "error",
+                "yandex_api_error": True,
+                "message": f"Yandex API returned {e.status_code}: {e}",
+                "suggestion": hint,
+            }
 
     async def close(self) -> None:
         if self._client is not None:

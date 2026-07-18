@@ -77,6 +77,56 @@ app.mais.agency {
 | `get_audience_segments` | Сегменты Яндекс Аудитории |
 | `get_admetrica_campaigns` | Кампании Яндекс AdMetrica |
 
+## Отладка с MCP Inspector
+
+Используй [MCP Inspector](https://modelcontextprotocol.io/docs/tools/inspector) для тестирования инструментов без LLM.
+
+### Локальный запуск
+
+```bash
+# 1. Убедись, что в .env указан SQLite
+# DATABASE_URL=sqlite+aiosqlite:///./data/yandex-mcp.db
+
+# 2. Запусти сервер
+uv run python -m app.main
+
+# 3. В другом терминале запусти Inspector
+npx @modelcontextprotocol/inspector
+
+# 4. В браузере (http://localhost:5173) выбери:
+#    Transport: Streamable HTTP
+#    URL: http://localhost:8000/mcp
+
+# 5. Перейди во вкладку Tools → List Tools → протестируй ping
+```
+
+### Тестирование ошибок
+
+Если `apiforge` получает 400/401/429 от Яндекса, сервер возвращает структурированный JSON:
+
+```json
+{
+  "status": "error",
+  "yandex_api_error": true,
+  "message": "Yandex API returned 401: Authentication failed",
+  "suggestion": "Re-authorize the Yandex account via OAuth."
+}
+```
+
+Ошибки выводятся в **ответе инструмента** (Response tab) и в **терминале сервера** (stdout).
+
+### Полезные команды
+
+```bash
+# Проверить health
+curl http://localhost:8000/ping
+
+# Прямой запрос к MCP (JSON-RPC)
+curl -X POST http://localhost:8000/mcp \
+  -H "Content-Type: application/json" \
+  -d '{"jsonrpc":"2.0","id":1,"method":"tools/list"}'
+```
+
 ## Структура проекта
 
 ```
