@@ -1,4 +1,5 @@
 import json
+import logging
 from datetime import datetime, timedelta, timezone
 from typing import Optional
 
@@ -14,11 +15,14 @@ from app.crypto import crypto
 from app.database import async_session_factory
 from app.models import MCPUser, MCPYandexAccount, ServiceType
 
+logger = logging.getLogger("yandex-admin")
+logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(name)s] %(levelname)s: %(message)s")
+
 SERVICE_SCOPES = {
-    ServiceType.direct: "direct:campaigns direct:reports direct:ads",
+    ServiceType.direct: "direct",
     ServiceType.metrika: "metrika:read",
-    ServiceType.webmaster: "webmaster:read",
-    ServiceType.audience: "audience:read",
+    ServiceType.webmaster: "webmaster",
+    ServiceType.audience: "audience",
     ServiceType.admetrica: "admetrica:read",
 }
 
@@ -184,12 +188,17 @@ async def _check_account_status(account: MCPYandexAccount) -> dict:
 
 @app.get("/admin/", response_class=HTMLResponse)
 async def dashboard(request: Request):
-    email = _user_email(request)
-    return templates.TemplateResponse(request, "dashboard.html", {
-        "user_email": email,
-        "service_labels": SERVICE_LABELS,
-        "service_types": list(ServiceType),
-    })
+    try:
+        email = _user_email(request)
+        logger.info(f"Dashboard requested by {email}")
+        return templates.TemplateResponse(request, "dashboard.html", {
+            "user_email": email,
+            "service_labels": SERVICE_LABELS,
+            "service_types": list(ServiceType),
+        })
+    except Exception as e:
+        logger.exception(f"Dashboard error: {e}")
+        return HTMLResponse(f"<h1>Dashboard Error</h1><pre>{e}</pre>", status_code=500)
 
 
 @app.get("/admin/integrations/{service}", response_class=HTMLResponse)
@@ -251,7 +260,25 @@ async def oauth_start(service: str, request: Request):
 
 
 @app.get("/admin/oauth/callback")
-async def oauth_callback(code: str = Query(...), state: str = Query(...), request: Request = None):
+async def oauth_callback(
+    request: Request,
+    code: Optional[str] = Query(None),
+    state: Optional[str] = Query(None),
+    error: Optional[str] = Query(None),
+    error_description: Optional[str] = Query(None),
+):
+    if error:
+        logger.warning(f"OAuth error: {error} — {error_description}")
+        return templates.TemplateResponse(request, "oauth_error.html", {
+            "user_email": _user_email(request),
+            "error": error,
+            "error_description": error_description or "Unknown error",
+            "setup_instructions": True,
+        })
+
+    if not code or not state:
+        return HTMLResponse("Missing code or state parameter", status_code=400)
+
     user_email = _user_email(request)
     state_cookie = request.cookies.get("oauth_state", "")
     if not state_cookie or state_cookie != state:

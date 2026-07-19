@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Ошибка авторизации через Яндекс</h1>
+
+<div class="error-box">
+    <strong>{{ error }}</strong><br>
+    <em>{{ error_description }}</em>
+</div>
+
+{% if error == "invalid_scope" %}
+<h2>Как исправить</h2>
+<p>Ваше OAuth-приложение на Яндексе не имеет нужных разрешений (scopes).</p>
+
+<ol>
+    <li>Откройте <a href="https://oauth.yandex.com/" target="_blank">oauth.yandex.com</a></li>
+    <li>Выберите ваше приложение (client_id: <code>{{ settings.yandex_client_id[:8] }}...</code>)</li>
+    <li>Перейдите в раздел <strong>"Доступы" (Permissions)</strong></li>
+    <li>Включите галочками нужные разрешения:
+        <ul>
+            <li>Yandex.Direct API</li>
+            <li>Yandex.Metrika API</li>
+            <li>Yandex.Webmaster API</li>
+            <li>Yandex.Audience API</li>
+            <li>AppMetrica API</li>
+        </ul>
+    </li>
+    <li>Убедитесь, что в <strong>Redirect URI</strong> указан:
+        <code>https://app.mais.agency/admin/oauth/callback</code>
+    </li>
+    <li>Сохраните изменения и попробуйте снова</li>
+</ol>
+
+<p>После изменения настроек может потребоваться 5-10 минут, чтобы изменения вступили в силу.</p>
+{% endif %}
+
+<p><a href="/admin/" class="btn">Вернуться на главную</a></p>
+{% endblock %}
