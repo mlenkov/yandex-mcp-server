@@ -1,0 +1,2139 @@
+[
+  {
+    "name": "documentation_get",
+    "title": "Documentation Get",
+    "description": "Read MCP source/action docs.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "source": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "document_key": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "section_key": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "action": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "query": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "mode": {
+          "default": "index",
+          "enum": [
+            "index",
+            "section",
+            "action",
+            "search"
+          ],
+          "type": "string"
+        },
+        "token_budget": {
+          "default": "short",
+          "enum": [
+            "tiny",
+            "short",
+            "normal"
+          ],
+          "type": "string"
+        },
+        "include_example": {
+          "default": false,
+          "type": "boolean"
+        },
+        "include_schema": {
+          "default": false,
+          "type": "boolean"
+        }
+      },
+      "type": "object"
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": false
+    },
+    "outputSchema": {
+      "additionalProperties": true,
+      "properties": {
+        "source": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "doc_key": {
+          "type": "string"
+        },
+        "version": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "mode": {
+          "type": "string"
+        },
+        "section_key": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "action": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "title": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "summary": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "markdown": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "sections": {
+          "items": {
+            "type": "object"
+          },
+          "type": "array"
+        },
+        "actions": {
+          "items": {
+            "type": "object"
+          },
+          "type": "array"
+        },
+        "next": {
+          "items": {
+            "type": "object"
+          },
+          "type": "array"
+        },
+        "doc_hash": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "estimated_tokens": {
+          "default": 0,
+          "type": "integer"
+        },
+        "warnings": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "input_schema": {
+          "anyOf": [
+            {
+              "type": "object"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "args_schema": {
+          "anyOf": [
+            {
+              "type": "object"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "schema_notes": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "tool_discovery": {
+          "anyOf": [
+            {
+              "type": "object"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        }
+      },
+      "required": [
+        "doc_key",
+        "mode"
+      ],
+      "type": "object"
+    }
+  },
+  {
+    "name": "direct",
+    "title": "Yandex Direct",
+    "description": "Read Yandex Direct data through documented source actions.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "action": {
+          "type": "string"
+        },
+        "account_id": {
+          "type": [
+            "integer",
+            "string",
+            "null"
+          ]
+        },
+        "args": {
+          "type": "object"
+        },
+        "request_context": {
+          "type": [
+            "object",
+            "null"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "task_id": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "format": "uuid"
+            },
+            "retry_of_call_id": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "format": "uuid"
+            },
+            "attempt_number": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": 1,
+              "maximum": 100
+            }
+          }
+        }
+      },
+      "required": [
+        "action"
+      ],
+      "type": "object"
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": false
+    },
+    "outputSchema": {
+      "properties": {
+        "source": {
+          "type": "string"
+        },
+        "action": {
+          "type": "string"
+        },
+        "ok": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "source",
+        "action",
+        "ok"
+      ],
+      "type": "object"
+    }
+  },
+  {
+    "name": "wordstat",
+    "title": "Yandex Wordstat",
+    "description": "Read Yandex Wordstat data through documented source actions.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "action": {
+          "type": "string"
+        },
+        "account_id": {
+          "type": [
+            "integer",
+            "string",
+            "null"
+          ]
+        },
+        "args": {
+          "type": "object"
+        },
+        "request_context": {
+          "type": [
+            "object",
+            "null"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "task_id": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "format": "uuid"
+            },
+            "retry_of_call_id": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "format": "uuid"
+            },
+            "attempt_number": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": 1,
+              "maximum": 100
+            }
+          }
+        }
+      },
+      "required": [
+        "action"
+      ],
+      "type": "object"
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": false
+    },
+    "outputSchema": {
+      "properties": {
+        "source": {
+          "type": "string"
+        },
+        "action": {
+          "type": "string"
+        },
+        "ok": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "source",
+        "action",
+        "ok"
+      ],
+      "type": "object"
+    }
+  },
+  {
+    "name": "clickhouse",
+    "title": "ClickHouse",
+    "description": "Run guarded read-only ClickHouse queries against connected accounts.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "action": {
+          "type": "string"
+        },
+        "account_id": {
+          "type": [
+            "integer",
+            "string",
+            "null"
+          ]
+        },
+        "args": {
+          "type": "object"
+        },
+        "request_context": {
+          "type": [
+            "object",
+            "null"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "task_id": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "format": "uuid"
+            },
+            "retry_of_call_id": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "format": "uuid"
+            },
+            "attempt_number": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": 1,
+              "maximum": 100
+            }
+          }
+        }
+      },
+      "required": [
+        "action"
+      ],
+      "type": "object"
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": false
+    },
+    "outputSchema": {
+      "properties": {
+        "source": {
+          "type": "string"
+        },
+        "action": {
+          "type": "string"
+        },
+        "ok": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "source",
+        "action",
+        "ok"
+      ],
+      "type": "object"
+    }
+  },
+  {
+    "name": "bitrix",
+    "title": "Bitrix24",
+    "description": "Read Bitrix24 CRM data through documented source actions.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "action": {
+          "type": "string"
+        },
+        "account_id": {
+          "type": [
+            "integer",
+            "string",
+            "null"
+          ]
+        },
+        "args": {
+          "type": "object"
+        },
+        "request_context": {
+          "type": [
+            "object",
+            "null"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "task_id": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "format": "uuid"
+            },
+            "retry_of_call_id": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "format": "uuid"
+            },
+            "attempt_number": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": 1,
+              "maximum": 100
+            }
+          }
+        }
+      },
+      "required": [
+        "action"
+      ],
+      "type": "object"
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": false
+    },
+    "outputSchema": {
+      "properties": {
+        "source": {
+          "type": "string"
+        },
+        "action": {
+          "type": "string"
+        },
+        "ok": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "source",
+        "action",
+        "ok"
+      ],
+      "type": "object"
+    }
+  },
+  {
+    "name": "metrica",
+    "title": "Yandex Metrica",
+    "description": "Read Yandex Metrica data through documented source actions.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "action": {
+          "type": "string"
+        },
+        "account_id": {
+          "type": [
+            "integer",
+            "string",
+            "null"
+          ]
+        },
+        "args": {
+          "type": "object"
+        },
+        "request_context": {
+          "type": [
+            "object",
+            "null"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "task_id": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "format": "uuid"
+            },
+            "retry_of_call_id": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "format": "uuid"
+            },
+            "attempt_number": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": 1,
+              "maximum": 100
+            }
+          }
+        }
+      },
+      "required": [
+        "action"
+      ],
+      "type": "object"
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": false
+    },
+    "outputSchema": {
+      "properties": {
+        "source": {
+          "type": "string"
+        },
+        "action": {
+          "type": "string"
+        },
+        "ok": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "source",
+        "action",
+        "ok"
+      ],
+      "type": "object"
+    }
+  },
+  {
+    "name": "webmaster",
+    "title": "Yandex Webmaster",
+    "description": "Read Yandex Webmaster data through documented read-only source actions.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "action": {
+          "type": "string"
+        },
+        "account_id": {
+          "type": [
+            "integer",
+            "string",
+            "null"
+          ]
+        },
+        "args": {
+          "type": "object"
+        },
+        "request_context": {
+          "type": [
+            "object",
+            "null"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "task_id": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "format": "uuid"
+            },
+            "retry_of_call_id": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "format": "uuid"
+            },
+            "attempt_number": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": 1,
+              "maximum": 100
+            }
+          }
+        }
+      },
+      "required": [
+        "action"
+      ],
+      "type": "object"
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": false
+    },
+    "outputSchema": {
+      "properties": {
+        "source": {
+          "type": "string"
+        },
+        "action": {
+          "type": "string"
+        },
+        "ok": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "source",
+        "action",
+        "ok"
+      ],
+      "type": "object"
+    }
+  },
+  {
+    "name": "topvisor",
+    "title": "Topvisor",
+    "description": "Read Topvisor SEO ranking data through documented source actions.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "action": {
+          "type": "string"
+        },
+        "account_id": {
+          "type": [
+            "integer",
+            "string",
+            "null"
+          ]
+        },
+        "args": {
+          "type": "object"
+        },
+        "request_context": {
+          "type": [
+            "object",
+            "null"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "task_id": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "format": "uuid"
+            },
+            "retry_of_call_id": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "format": "uuid"
+            },
+            "attempt_number": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": 1,
+              "maximum": 100
+            }
+          }
+        }
+      },
+      "required": [
+        "action"
+      ],
+      "type": "object"
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": false
+    },
+    "outputSchema": {
+      "properties": {
+        "source": {
+          "type": "string"
+        },
+        "action": {
+          "type": "string"
+        },
+        "ok": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "source",
+        "action",
+        "ok"
+      ],
+      "type": "object"
+    }
+  },
+  {
+    "name": "amocrm",
+    "title": "amoCRM",
+    "description": "Read amoCRM data through documented source actions.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "action": {
+          "type": "string"
+        },
+        "account_id": {
+          "type": [
+            "integer",
+            "string",
+            "null"
+          ]
+        },
+        "args": {
+          "type": "object"
+        },
+        "request_context": {
+          "type": [
+            "object",
+            "null"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "task_id": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "format": "uuid"
+            },
+            "retry_of_call_id": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "format": "uuid"
+            },
+            "attempt_number": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": 1,
+              "maximum": 100
+            }
+          }
+        }
+      },
+      "required": [
+        "action"
+      ],
+      "type": "object"
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": false
+    },
+    "outputSchema": {
+      "properties": {
+        "source": {
+          "type": "string"
+        },
+        "action": {
+          "type": "string"
+        },
+        "ok": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "source",
+        "action",
+        "ok"
+      ],
+      "type": "object"
+    }
+  },
+  {
+    "name": "calltouch",
+    "title": "Calltouch",
+    "description": "Read Calltouch data through documented source actions.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "action": {
+          "type": "string"
+        },
+        "account_id": {
+          "type": [
+            "integer",
+            "string",
+            "null"
+          ]
+        },
+        "args": {
+          "type": "object"
+        },
+        "request_context": {
+          "type": [
+            "object",
+            "null"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "task_id": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "format": "uuid"
+            },
+            "retry_of_call_id": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "format": "uuid"
+            },
+            "attempt_number": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": 1,
+              "maximum": 100
+            }
+          }
+        }
+      },
+      "required": [
+        "action"
+      ],
+      "type": "object"
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": false
+    },
+    "outputSchema": {
+      "properties": {
+        "source": {
+          "type": "string"
+        },
+        "action": {
+          "type": "string"
+        },
+        "ok": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "source",
+        "action",
+        "ok"
+      ],
+      "type": "object"
+    }
+  },
+  {
+    "name": "roistat",
+    "title": "Roistat",
+    "description": "Read Roistat project data through documented source actions.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "action": {
+          "type": "string"
+        },
+        "account_id": {
+          "type": [
+            "integer",
+            "string",
+            "null"
+          ]
+        },
+        "args": {
+          "type": "object"
+        },
+        "request_context": {
+          "type": [
+            "object",
+            "null"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "task_id": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "format": "uuid"
+            },
+            "retry_of_call_id": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "format": "uuid"
+            },
+            "attempt_number": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": 1,
+              "maximum": 100
+            }
+          }
+        }
+      },
+      "required": [
+        "action"
+      ],
+      "type": "object"
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": false
+    },
+    "outputSchema": {
+      "properties": {
+        "source": {
+          "type": "string"
+        },
+        "action": {
+          "type": "string"
+        },
+        "ok": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "source",
+        "action",
+        "ok"
+      ],
+      "type": "object"
+    }
+  },
+  {
+    "name": "avito",
+    "title": "Avito",
+    "description": "Read Avito data through documented source actions.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "action": {
+          "type": "string"
+        },
+        "account_id": {
+          "type": [
+            "integer",
+            "string",
+            "null"
+          ]
+        },
+        "args": {
+          "type": "object"
+        },
+        "request_context": {
+          "type": [
+            "object",
+            "null"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "task_id": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "format": "uuid"
+            },
+            "retry_of_call_id": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "format": "uuid"
+            },
+            "attempt_number": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": 1,
+              "maximum": 100
+            }
+          }
+        }
+      },
+      "required": [
+        "action"
+      ],
+      "type": "object"
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": false
+    },
+    "outputSchema": {
+      "properties": {
+        "source": {
+          "type": "string"
+        },
+        "action": {
+          "type": "string"
+        },
+        "ok": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "source",
+        "action",
+        "ok"
+      ],
+      "type": "object"
+    }
+  },
+  {
+    "name": "avito_ads",
+    "title": "Avito Ads",
+    "description": "Read Avito Ads cabinet data through documented actions.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "action": {
+          "type": "string"
+        },
+        "account_id": {
+          "type": [
+            "integer",
+            "string",
+            "null"
+          ]
+        },
+        "args": {
+          "type": "object"
+        },
+        "request_context": {
+          "type": [
+            "object",
+            "null"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "task_id": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "format": "uuid"
+            },
+            "retry_of_call_id": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "format": "uuid"
+            },
+            "attempt_number": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": 1,
+              "maximum": 100
+            }
+          }
+        }
+      },
+      "required": [
+        "action"
+      ],
+      "type": "object"
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": false
+    },
+    "outputSchema": {
+      "properties": {
+        "source": {
+          "type": "string"
+        },
+        "action": {
+          "type": "string"
+        },
+        "ok": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "source",
+        "action",
+        "ok"
+      ],
+      "type": "object"
+    }
+  },
+  {
+    "name": "ozon",
+    "title": "Ozon",
+    "description": "Read Ozon Seller data through documented source actions.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "action": {
+          "type": "string"
+        },
+        "account_id": {
+          "type": [
+            "integer",
+            "string",
+            "null"
+          ]
+        },
+        "args": {
+          "type": "object"
+        },
+        "request_context": {
+          "type": [
+            "object",
+            "null"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "task_id": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "format": "uuid"
+            },
+            "retry_of_call_id": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "format": "uuid"
+            },
+            "attempt_number": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": 1,
+              "maximum": 100
+            }
+          }
+        }
+      },
+      "required": [
+        "action"
+      ],
+      "type": "object"
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": false
+    },
+    "outputSchema": {
+      "properties": {
+        "source": {
+          "type": "string"
+        },
+        "action": {
+          "type": "string"
+        },
+        "ok": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "source",
+        "action",
+        "ok"
+      ],
+      "type": "object"
+    }
+  },
+  {
+    "name": "ozon_performance",
+    "title": "Ozon Performance",
+    "description": "Read Ozon Performance advertising data through documented source actions.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "action": {
+          "type": "string"
+        },
+        "account_id": {
+          "type": [
+            "integer",
+            "string",
+            "null"
+          ]
+        },
+        "args": {
+          "type": "object"
+        },
+        "request_context": {
+          "type": [
+            "object",
+            "null"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "task_id": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "format": "uuid"
+            },
+            "retry_of_call_id": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "format": "uuid"
+            },
+            "attempt_number": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": 1,
+              "maximum": 100
+            }
+          }
+        }
+      },
+      "required": [
+        "action"
+      ],
+      "type": "object"
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": false
+    },
+    "outputSchema": {
+      "properties": {
+        "source": {
+          "type": "string"
+        },
+        "action": {
+          "type": "string"
+        },
+        "ok": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "source",
+        "action",
+        "ok"
+      ],
+      "type": "object"
+    }
+  },
+  {
+    "name": "vk_ads",
+    "title": "VK Ads",
+    "description": "Read VK Ads cabinet data through documented read-only actions.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "action": {
+          "type": "string"
+        },
+        "account_id": {
+          "type": [
+            "integer",
+            "string",
+            "null"
+          ]
+        },
+        "args": {
+          "type": "object"
+        },
+        "request_context": {
+          "type": [
+            "object",
+            "null"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "task_id": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "format": "uuid"
+            },
+            "retry_of_call_id": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "format": "uuid"
+            },
+            "attempt_number": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": 1,
+              "maximum": 100
+            }
+          }
+        }
+      },
+      "required": [
+        "action"
+      ],
+      "type": "object"
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": false
+    },
+    "outputSchema": {
+      "properties": {
+        "source": {
+          "type": "string"
+        },
+        "action": {
+          "type": "string"
+        },
+        "ok": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "source",
+        "action",
+        "ok"
+      ],
+      "type": "object"
+    }
+  },
+  {
+    "name": "wildberries",
+    "title": "Wildberries",
+    "description": "Чтение данных продавца Wildberries через безопасные действия.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "action": {
+          "type": "string"
+        },
+        "account_id": {
+          "type": [
+            "integer",
+            "string",
+            "null"
+          ]
+        },
+        "args": {
+          "type": "object"
+        },
+        "request_context": {
+          "type": [
+            "object",
+            "null"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "task_id": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "format": "uuid"
+            },
+            "retry_of_call_id": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "format": "uuid"
+            },
+            "attempt_number": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": 1,
+              "maximum": 100
+            }
+          }
+        }
+      },
+      "required": [
+        "action"
+      ],
+      "type": "object"
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": false
+    },
+    "outputSchema": {
+      "properties": {
+        "source": {
+          "type": "string"
+        },
+        "action": {
+          "type": "string"
+        },
+        "ok": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "source",
+        "action",
+        "ok"
+      ],
+      "type": "object"
+    }
+  },
+  {
+    "name": "yandex_market",
+    "title": "Яндекс Маркет",
+    "description": "Чтение данных продавца Яндекс Маркета через безопасные действия.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "action": {
+          "type": "string"
+        },
+        "account_id": {
+          "type": [
+            "integer",
+            "string",
+            "null"
+          ]
+        },
+        "args": {
+          "type": "object"
+        },
+        "request_context": {
+          "type": [
+            "object",
+            "null"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "task_id": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "format": "uuid"
+            },
+            "retry_of_call_id": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "format": "uuid"
+            },
+            "attempt_number": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": 1,
+              "maximum": 100
+            }
+          }
+        }
+      },
+      "required": [
+        "action"
+      ],
+      "type": "object"
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": false,
+      "idempotentHint": false,
+      "openWorldHint": false
+    },
+    "outputSchema": {
+      "properties": {
+        "source": {
+          "type": "string"
+        },
+        "action": {
+          "type": "string"
+        },
+        "ok": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "source",
+        "action",
+        "ok"
+      ],
+      "type": "object"
+    }
+  },
+  {
+    "name": "appmetrica",
+    "title": "AppMetrica",
+    "description": "Read one AppMetrica application through fixed read-only actions.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "action": {
+          "type": "string"
+        },
+        "account_id": {
+          "type": [
+            "integer",
+            "string",
+            "null"
+          ]
+        },
+        "args": {
+          "type": "object"
+        },
+        "request_context": {
+          "type": [
+            "object",
+            "null"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "task_id": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "format": "uuid"
+            },
+            "retry_of_call_id": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "format": "uuid"
+            },
+            "attempt_number": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": 1,
+              "maximum": 100
+            }
+          }
+        }
+      },
+      "required": [
+        "action"
+      ],
+      "type": "object"
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": false
+    },
+    "outputSchema": {
+      "properties": {
+        "source": {
+          "type": "string"
+        },
+        "action": {
+          "type": "string"
+        },
+        "ok": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "source",
+        "action",
+        "ok"
+      ],
+      "type": "object"
+    }
+  },
+  {
+    "name": "mindbox",
+    "title": "Mindbox",
+    "description": "Read Mindbox data through server-approved project operations.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "action": {
+          "type": "string"
+        },
+        "account_id": {
+          "type": [
+            "integer",
+            "string",
+            "null"
+          ]
+        },
+        "args": {
+          "type": "object"
+        },
+        "request_context": {
+          "type": [
+            "object",
+            "null"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "task_id": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "format": "uuid"
+            },
+            "retry_of_call_id": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "format": "uuid"
+            },
+            "attempt_number": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": 1,
+              "maximum": 100
+            }
+          }
+        }
+      },
+      "required": [
+        "action"
+      ],
+      "type": "object"
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": false,
+      "idempotentHint": false,
+      "openWorldHint": false
+    },
+    "outputSchema": {
+      "properties": {
+        "source": {
+          "type": "string"
+        },
+        "action": {
+          "type": "string"
+        },
+        "ok": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "source",
+        "action",
+        "ok"
+      ],
+      "type": "object"
+    }
+  },
+  {
+    "name": "unisender",
+    "title": "Unisender",
+    "description": "Read Unisender lists, counts and delivery statistics.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "action": {
+          "type": "string"
+        },
+        "account_id": {
+          "type": [
+            "integer",
+            "string",
+            "null"
+          ]
+        },
+        "args": {
+          "type": "object"
+        },
+        "request_context": {
+          "type": [
+            "object",
+            "null"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "task_id": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "format": "uuid"
+            },
+            "retry_of_call_id": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "format": "uuid"
+            },
+            "attempt_number": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": 1,
+              "maximum": 100
+            }
+          }
+        }
+      },
+      "required": [
+        "action"
+      ],
+      "type": "object"
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": false
+    },
+    "outputSchema": {
+      "properties": {
+        "source": {
+          "type": "string"
+        },
+        "action": {
+          "type": "string"
+        },
+        "ok": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "source",
+        "action",
+        "ok"
+      ],
+      "type": "object"
+    }
+  },
+  {
+    "name": "project_context",
+    "title": "Project Context",
+    "description": "Read project/account context.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "action": {
+          "enum": [
+            "projects.list",
+            "project.get",
+            "account.get"
+          ],
+          "type": "string"
+        },
+        "args": {
+          "type": "object"
+        }
+      },
+      "required": [
+        "action"
+      ],
+      "type": "object"
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": false
+    },
+    "outputSchema": {
+      "properties": {
+        "ok": {
+          "type": "boolean"
+        },
+        "action": {
+          "type": "string"
+        },
+        "data": {
+          "type": "object"
+        },
+        "warnings": {
+          "items": {},
+          "type": "array"
+        }
+      },
+      "required": [
+        "ok",
+        "action",
+        "data",
+        "warnings"
+      ],
+      "type": "object"
+    }
+  },
+  {
+    "name": "feedback",
+    "title": "Фидбэк",
+    "description": "Submit redacted MCP failure feedback.",
+    "inputSchema": {
+      "$defs": {
+        "FeedbackDiagnosticAttachmentInput": {
+          "additionalProperties": false,
+          "properties": {
+            "file_name": {
+              "maxLength": 180,
+              "minLength": 1,
+              "type": "string"
+            },
+            "content": {
+              "maxLength": 16777216,
+              "minLength": 1,
+              "type": "string"
+            },
+            "mime_type": {
+              "anyOf": [
+                {
+                  "maxLength": 128,
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null
+            }
+          },
+          "required": [
+            "file_name",
+            "content"
+          ],
+          "type": "object"
+        }
+      },
+      "additionalProperties": false,
+      "properties": {
+        "reason": {
+          "default": "tool_error",
+          "enum": [
+            "tool_error",
+            "validation_error",
+            "provider_error",
+            "unexpected_response",
+            "first_attempt_failed",
+            "other"
+          ],
+          "type": "string"
+        },
+        "attempted_tool": {
+          "maxLength": 128,
+          "minLength": 1,
+          "type": "string"
+        },
+        "attempted_action": {
+          "anyOf": [
+            {
+              "maxLength": 128,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "attempted_arguments": {
+          "type": "object"
+        },
+        "response": {
+          "anyOf": [
+            {},
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "agent_summary": {
+          "maxLength": 5000,
+          "minLength": 10,
+          "type": "string"
+        },
+        "retry_count": {
+          "anyOf": [
+            {
+              "maximum": 20,
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "extra_context": {
+          "type": "object"
+        },
+        "diagnostic_files": {
+          "items": {
+            "$ref": "#/$defs/FeedbackDiagnosticAttachmentInput"
+          },
+          "maxItems": 3,
+          "type": "array"
+        }
+      },
+      "required": [
+        "attempted_tool",
+        "agent_summary"
+      ],
+      "type": "object"
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": false,
+      "idempotentHint": false,
+      "openWorldHint": false
+    },
+    "outputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "ok": {
+          "type": "boolean"
+        },
+        "feedback_id": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string"
+        },
+        "pii_redacted": {
+          "type": "boolean"
+        },
+        "stored_payload_truncated": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "ok",
+        "feedback_id",
+        "status",
+        "pii_redacted",
+        "stored_payload_truncated"
+      ],
+      "type": "object"
+    }
+  }
+]
