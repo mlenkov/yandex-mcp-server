@@ -96,6 +96,7 @@ class AccountService:
         lock = self._get_lock(account_id)
         async with lock:
             account = await self.get_account(account_id)
+            service_type = account.service_type
             remaining = (account.token_expires_at - datetime.utcnow()).total_seconds() if account.token_expires_at else 0
             if remaining > 60:
                 return crypto.decrypt(account.encrypted_access_token)
@@ -104,14 +105,15 @@ class AccountService:
             if not refresh_token:
                 raise ValueError(f"Account {account_id} has no refresh token")
 
+        client_id, client_secret = settings.get_oauth_credentials(service_type)
         async with httpx.AsyncClient() as client:
             resp = await client.post(
-                "https://oauth.yandex.ru/token",
+                "https://oauth.yandex.com/token",
                 data={
                     "grant_type": "refresh_token",
                     "refresh_token": refresh_token,
-                    "client_id": settings.yandex_client_id,
-                    "client_secret": settings.yandex_client_secret,
+                    "client_id": client_id,
+                    "client_secret": client_secret,
                 },
             )
             resp.raise_for_status()
@@ -125,7 +127,7 @@ class AccountService:
         async with async_session_factory() as session:
             account = await session.get(MCPYandexAccount, account_id)
             account.encrypted_access_token = crypto.encrypt(new_access)
-            account.encrypted_refresh_token = crypto.encrypt(new_refresh)
+            account.encrypted_refresh_token = crypto.encrypt(new_refresh) if new_refresh else account.encrypted_refresh_token
             account.token_expires_at = new_expires
             await session.commit()
 

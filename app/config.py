@@ -1,9 +1,11 @@
 from pathlib import Path
 
 from pydantic_settings import BaseSettings
-from typing import Optional
+from typing import Optional, Tuple
 from functools import cached_property
 from cryptography.fernet import Fernet
+
+from app.models import ServiceType
 
 
 def _default_fernet_path() -> Path:
@@ -32,10 +34,20 @@ class Settings(BaseSettings):
     # Encryption
     fernet_key: Optional[str] = None
 
-    # Yandex OAuth
-    yandex_client_id: str = ""
-    yandex_client_secret: str = ""
-    yandex_redirect_uri: str = ""
+    # Yandex OAuth — отдельные приложения для каждого сервиса
+    yandex_direct_client_id: str = ""
+    yandex_direct_client_secret: str = ""
+    yandex_metrika_client_id: str = ""
+    yandex_metrika_client_secret: str = ""
+    yandex_webmaster_client_id: str = ""
+    yandex_webmaster_client_secret: str = ""
+    yandex_audience_client_id: str = ""
+    yandex_audience_client_secret: str = ""
+    yandex_admetrica_client_id: str = ""
+    yandex_admetrica_client_secret: str = ""
+
+    # Общий redirect_uri для всех сервисов
+    yandex_redirect_uri: str = "https://app.mais.agency/admin/oauth/callback"
 
     # Server
     host: str = "0.0.0.0"
@@ -65,6 +77,16 @@ class Settings(BaseSettings):
         if self.is_sqlite:
             return {"check_same_thread": False}
         return {}
+
+    def get_oauth_credentials(self, service_type: ServiceType) -> Tuple[str, str]:
+        credentials_map = {
+            ServiceType.direct: (self.yandex_direct_client_id, self.yandex_direct_client_secret),
+            ServiceType.metrika: (self.yandex_metrika_client_id, self.yandex_metrika_client_secret),
+            ServiceType.webmaster: (self.yandex_webmaster_client_id, self.yandex_webmaster_client_secret),
+            ServiceType.audience: (self.yandex_audience_client_id, self.yandex_audience_client_secret),
+            ServiceType.admetrica: (self.yandex_admetrica_client_id, self.yandex_admetrica_client_secret),
+        }
+        return credentials_map.get(service_type, ("", ""))
 
 
 settings = Settings()

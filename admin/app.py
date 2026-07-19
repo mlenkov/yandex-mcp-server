@@ -41,7 +41,7 @@ app.mount("/admin/static", StaticFiles(directory="admin/static"), name="static")
 
 
 def _user_email(request: Request) -> str:
-    return request.headers.get("X-Forwarded-User") or request.headers.get("X-Forwarded-Email") or "unknown"
+    return request.headers.get("X-Forwarded-Email") or request.headers.get("X-Forwarded-User") or "unknown"
 
 
 async def _get_or_create_user(email: str) -> MCPUser:
@@ -203,7 +203,10 @@ async def dashboard(request: Request):
 
 @app.get("/admin/integrations/{service}", response_class=HTMLResponse)
 async def service_page(service: str, request: Request):
-    service_type = ServiceType(service)
+    try:
+        service_type = ServiceType(service)
+    except ValueError:
+        return RedirectResponse("/admin/")
     email = _user_email(request)
     user = await _get_or_create_user(email)
     async with async_session_factory() as session:
@@ -220,26 +223,32 @@ async def service_page(service: str, request: Request):
     for acc in integrations:
         account_statuses[acc.id] = await _check_account_status(acc)
 
+    client_id, _ = settings.get_oauth_credentials(service_type)
     return templates.TemplateResponse(request, "service_page.html", {
         "user_email": email,
         "service": service,
         "service_label": SERVICE_LABELS[service_type],
         "integrations": integrations,
         "account_statuses": account_statuses,
-        "client_id": settings.yandex_client_id,
+        "client_id": client_id,
     })
 
 
 @app.get("/admin/oauth/start")
 async def oauth_start(service: str, request: Request):
-    if not settings.yandex_client_id:
+    try:
+        service_type = ServiceType(service)
+    except ValueError:
+        return RedirectResponse("/admin/")
+
+    client_id, client_secret = settings.get_oauth_credentials(service_type)
+    if not client_id:
         return HTMLResponse(
-            "<h1>Ошибка конфигурации</h1>"
-            "<p>YANDEX_CLIENT_ID не задан в .env.prod</p>",
+            f"<h1>Ошибка конфигурации</h1>"
+            f"<p>YANDEX_{service.upper()}_CLIENT_ID не задан в .env.prod</p>",
             status_code=500,
         )
 
-    service_type = ServiceType(service)
     scope = SERVICE_SCOPES[service_type]
     state = crypto.encrypt(f"{service}:{_user_email(request)}")
     redirect_uri = settings.yandex_redirect_uri or "https://app.mais.agency/admin/oauth/callback"
@@ -247,7 +256,7 @@ async def oauth_start(service: str, request: Request):
     oauth_url = (
         f"https://oauth.yandex.com/authorize?"
         f"response_type=code&"
-        f"client_id={settings.yandex_client_id}&"
+        f"client_id={client_id}&"
         f"redirect_uri={redirect_uri}&"
         f"scope={scope}&"
         f"state={state}&"
@@ -269,10 +278,20 @@ async def oauth_callback(
 ):
     if error:
         logger.warning(f"OAuth error: {error} — {error_description}")
+        client_id = ""
+        if state:
+            try:
+                decrypted = crypto.decrypt(state)
+                service_str, _ = decrypted.split(":", 1)
+                cid, _ = settings.get_oauth_credentials(ServiceType(service_str))
+                client_id = cid
+            except Exception:
+                pass
         return templates.TemplateResponse(request, "oauth_error.html", {
             "user_email": _user_email(request),
             "error": error,
             "error_description": error_description or "Unknown error",
+            "client_id": client_id,
             "setup_instructions": True,
         })
 
@@ -291,13 +310,14 @@ async def oauth_callback(
 
     service_type = ServiceType(service_str)
 
+    client_id, client_secret = settings.get_oauth_credentials(service_type)
     redirect_uri = settings.yandex_redirect_uri or "https://app.mais.agency/admin/oauth/callback"
     async with httpx.AsyncClient() as client:
         resp = await client.post("https://oauth.yandex.com/token", data={
             "grant_type": "authorization_code",
             "code": code,
-            "client_id": settings.yandex_client_id,
-            "client_secret": settings.yandex_client_secret,
+            "client_id": client_id,
+            "client_secret": client_secret,
         })
         resp.raise_for_status()
         token_data = resp.json()
