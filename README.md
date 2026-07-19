@@ -60,6 +60,28 @@ uv run python -m app.main
 
 ## Production-деплой
 
+### SQLite (рекомендуется для MVP)
+
+```bash
+# 0. Создать внешнюю Docker-сеть (только первый раз)
+docker network create mais-bifrost-net
+
+# 1. Скопировать production env
+cp .env.example .env.prod
+# Заполнить: FERNET_KEY, YANDEX_CLIENT_ID, YANDEX_CLIENT_SECRET
+
+# 2. Запустить стек (сборка + запуск)
+docker compose -f docker-compose.prod.sqlite.yml up -d --build
+
+# 3. Применить миграции
+docker exec mais-yandex-mcp uv run alembic upgrade head
+
+# 4. Проверить
+docker exec mais-yandex-mcp curl http://127.0.0.1:8000/ping
+```
+
+### MySQL (для высоких нагрузок)
+
 ```bash
 # 0. Создать внешнюю Docker-сеть (только первый раз)
 docker network create mais-bifrost-net

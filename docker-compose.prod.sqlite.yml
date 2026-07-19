@@ -1,0 +1,58 @@
+name: mais
+
+services:
+  yandex-mcp:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: mais-yandex-mcp
+    restart: unless-stopped
+    expose:
+      - "8000"
+    env_file: .env.prod
+    volumes:
+      - yandex-mcp-data:/app/data
+      - ./app/yandex_configs:/app/app/yandex_configs:ro
+    networks:
+      - mais-bifrost-net
+    labels:
+      project: "mais"
+      service: "yandex-mcp"
+      environment: "production"
+    deploy:
+      resources:
+        limits:
+          cpus: "0.3"
+          memory: "128M"
+
+  yandex-admin:
+    build:
+      context: .
+      dockerfile: Dockerfile.admin
+    container_name: mais-yandex-admin
+    restart: unless-stopped
+    expose:
+      - "8100"
+    env_file: .env.prod
+    volumes:
+      - yandex-mcp-data:/app/data
+    networks:
+      - mais-bifrost-net
+    labels:
+      project: "mais"
+      service: "yandex-admin"
+      environment: "production"
+    deploy:
+      resources:
+        limits:
+          cpus: "0.3"
+          memory: "128M"
+
+volumes:
+  yandex-mcp-data:
+    name: mais-yandex-mcp-data
+
+networks:
+  mais-bifrost-net:
+    external: true
+    name: mais-bifrost-net

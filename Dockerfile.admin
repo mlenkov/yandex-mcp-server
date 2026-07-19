@@ -9,6 +9,7 @@ RUN uv sync --no-dev --frozen
 
 COPY app/ ./app/
 COPY admin/ ./admin/
+COPY app/yandex_configs/ ./app/yandex_configs/
 
 ENV PYTHONUNBUFFERED=1
 EXPOSE 8100
