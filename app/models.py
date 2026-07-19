@@ -52,5 +52,6 @@ class MCPYandexAccount(Base):
     encrypted_refresh_token = Column(Text, nullable=True)
     token_expires_at = Column(DateTime, nullable=True)
     is_active = Column(Boolean, default=True, nullable=False)
+    account_context = Column(Text, nullable=True)
 
     user = relationship("MCPUser", back_populates="yandex_accounts")

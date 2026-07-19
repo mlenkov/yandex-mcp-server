@@ -37,6 +37,7 @@ async def list_yandex_accounts(ctx: Context) -> list[dict]:
             "account_name": acc.account_name,
             "service_type": acc.service_type.value,
             "is_active": acc.is_active,
+            "context": (acc.account_context[:200] + "...") if acc.account_context and len(acc.account_context) > 200 else (acc.account_context or ""),
         }
         for acc in accounts
     ]

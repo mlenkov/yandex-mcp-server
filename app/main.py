@@ -3,17 +3,23 @@ from mcp.server.fastmcp import FastMCP, Context
 from app.config import settings
 from app import models  # noqa: F401 – ensure models are loaded for Alembic
 from app.tools.accounts import list_yandex_accounts
-from app.tools.direct import get_direct_campaigns
+from app.tools.direct import get_direct_campaigns, get_direct_stats, get_direct_keywords, get_direct_ads
 from app.tools.metrika import get_metrika_counters
 from app.tools.webmaster import get_webmaster_hosts
 from app.tools.audience import get_audience_segments
 from app.tools.admetrica import get_admetrica_campaigns
+from app.tools.account_management import update_account_context, get_account_context
+from app.resources.yandex_docs import register_resources
+from app.prompts.yandex_scenarios import register_prompts
 
 mcp = FastMCP(
     "Yandex MCP Server",
     instructions="MCP server for Yandex API services: Direct, Metrika, Audience, AdMetrica, Webmaster",
     host="0.0.0.0",
 )
+
+register_resources(mcp)
+register_prompts(mcp)
 
 
 @mcp.tool()
@@ -148,6 +154,108 @@ async def get_admetrica_campaigns_tool(
     ВОЗВРАЩАЕТ: кампании с id, name, status, type.
     """
     return await get_admetrica_campaigns(ctx, account_id, limit)
+
+
+@mcp.tool()
+async def get_direct_stats_tool(
+    ctx: Context,
+    campaign_id: int,
+    date_from: str,
+    date_to: str,
+    account_id: int | None = None,
+) -> dict:
+    """Получить статистику по кампании Яндекс.Директа за период.
+
+    КОГДА ИСПОЛЬЗОВАТЬ:
+    - Нужно проанализировать эффективность кампании
+    - Получить показы, клики, CTR, CPC, расходы, конверсии
+
+    ПАРАМЕТРЫ:
+    - campaign_id: ID кампании из get_direct_campaigns
+    - date_from: Начало периода в формате YYYY-MM-DD
+    - date_to: Конец периода в формате YYYY-MM-DD
+    - account_id: ID аккаунта (опционально)
+
+    ВОЗВРАЩАЕТ: метрики Impressions, Clicks, CTR, CPC, Cost, Conversions.
+    """
+    return await get_direct_stats(ctx, campaign_id, date_from, date_to, account_id)
+
+
+@mcp.tool()
+async def get_direct_keywords_tool(
+    ctx: Context,
+    campaign_id: int,
+    account_id: int | None = None,
+    limit: int = 500,
+) -> dict:
+    """Получить список ключевых слов кампании Яндекс.Директа.
+
+    КОГДА ИСПОЛЬЗОВАТЬ:
+    - Нужно посмотреть ключевые слова и ставки
+    - Нужно найти ID фразы для изменения ставки
+
+    ПАРАМЕТРЫ:
+    - campaign_id: ID кампании из get_direct_campaigns
+    - account_id: ID аккаунта (опционально)
+    - limit: Максимум фраз (1-1000, по умолч. 500)
+
+    ВОЗВРАЩАЕТ: ключевые слова с Id, Keyword, Status, Bid.
+    """
+    return await get_direct_keywords(ctx, campaign_id, account_id, limit)
+
+
+@mcp.tool()
+async def get_direct_ads_tool(
+    ctx: Context,
+    campaign_id: int,
+    account_id: int | None = None,
+    limit: int = 500,
+) -> dict:
+    """Получить список объявлений кампании Яндекс.Директа.
+
+    КОГДА ИСПОЛЬЗОВАТЬ:
+    - Нужно просмотреть все объявления кампании
+    - Нужно проверить статус модерации
+
+    ПАРАМЕТРЫ:
+    - campaign_id: ID кампании из get_direct_campaigns
+    - account_id: ID аккаунта (опционально)
+    - limit: Максимум объявлений (1-1000, по умолч. 500)
+
+    ВОЗВРАЩАЕТ: объявления с Id, Title, Text, Status, State.
+    """
+    return await get_direct_ads(ctx, campaign_id, account_id, limit)
+
+
+@mcp.tool()
+async def update_account_context_tool(account_id: int, context: str) -> dict:
+    """Обновить контекст (мета-информацию) для аккаунта Яндекса.
+
+    КОГДА ИСПОЛЬЗОВАТЬ:
+    - Пользователь хочет добавить заметки к аккаунту
+    - Нужно указать "это тестовый аккаунт" или "основной продакшн"
+    - Нужно добавить бизнес-правила
+
+    ПАРАМЕТРЫ:
+    - account_id: ID аккаунта из list_yandex_accounts
+    - context: Текстовое описание (до 5000 символов)
+
+    ПРИМЕР: update_account_context(42, "Основной аккаунт. CPA 500 руб.")
+    """
+    return await update_account_context(account_id, context)
+
+
+@mcp.tool()
+async def get_account_context_tool(account_id: int) -> dict:
+    """Получить контекст (мета-информацию) аккаунта Яндекса.
+
+    КОГДА ИСПОЛЬЗОВАТЬ:
+    - Перед выполнением действий с аккаунтом
+    - Чтобы понять бизнес-правила и ограничения
+
+    ВОЗВРАЩАЕТ: {"account_id": 42, "context": "..."}
+    """
+    return await get_account_context(account_id)
 
 
 if __name__ == "__main__":

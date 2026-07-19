@@ -131,5 +131,20 @@ class AccountService:
 
         return new_access
 
+    async def update_account_context(self, account_id: int, context: str) -> None:
+        async with async_session_factory() as session:
+            account = await session.get(MCPYandexAccount, account_id)
+            if account is None:
+                raise ValueError(f"Account {account_id} not found")
+            account.account_context = context
+            await session.commit()
+
+    async def get_account_context(self, account_id: int) -> str | None:
+        async with async_session_factory() as session:
+            account = await session.get(MCPYandexAccount, account_id)
+            if account is None:
+                raise ValueError(f"Account {account_id} not found")
+            return account.account_context
+
 
 account_service = AccountService()
