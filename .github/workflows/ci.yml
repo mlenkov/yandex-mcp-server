@@ -6,6 +6,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: astral-sh/setup-uv@v3
-      - run: uv sync --no-dev
+      - run: uv sync --extra test
       - run: uv run python -m py_compile app/*.py
       - run: uv run ruff check .
+      - run: uv run pytest tests/ -v
+        env:
+          YANDEX_DIRECT_CLIENT_ID: "test"
+          FERNET_KEY: "dGVzdC1rZXktMTIzNDU2Nzg5MDEyMzQ1Njc4OTA="
+          DATABASE_URL: "sqlite+aiosqlite:///./data/test.db"

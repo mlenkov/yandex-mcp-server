@@ -19,11 +19,11 @@ logger = logging.getLogger("yandex-admin")
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(name)s] %(levelname)s: %(message)s")
 
 SERVICE_SCOPES = {
-    ServiceType.direct: "direct",
+    ServiceType.direct: "direct:api",
     ServiceType.metrika: "metrika:read",
-    ServiceType.webmaster: "webmaster",
-    ServiceType.audience: "audience",
-    ServiceType.admetrica: "admetrica:read",
+    ServiceType.webmaster: "webmaster:api",
+    ServiceType.audience: "audience:api",
+    ServiceType.admetrica: "admetrica:api",
 }
 
 SERVICE_LABELS = {
@@ -73,22 +73,22 @@ async def _fetch_available_accounts(service_type: ServiceType, access_token: str
     """Получить список доступных аккаунтов через API Яндекса после OAuth."""
     async with httpx.AsyncClient() as client:
         if service_type == ServiceType.direct:
-            resp = await client.get(
+            resp = await client.post(
                 "https://api.direct.yandex.com/json/v5/clients",
-                headers={"Authorization": f"Bearer {access_token}", "Accept-Language": "ru"},
+                headers={
+                    "Authorization": f"Bearer {access_token}",
+                    "Content-Type": "application/json; charset=utf-8",
+                },
+                json={"method": "get", "params": {"SelectionCriteria": {}, "FieldNames": ["Login"]}},
                 timeout=10,
             )
             if resp.status_code == 200:
-                data = resp.json()
-                clients = data.get("result", {}).get("Clients", [])
-                return [
-                    {
-                        "login": c.get("Login", ""),
-                        "type": c.get("Type", ""),
-                        "source": "Текущий аккаунт" if c.get("Type") == "CLIENT" else "Подопечный логин",
-                    }
-                    for c in clients
-                ]
+                clients = resp.json().get("result", {}).get("Clients", [])
+                if clients:
+                    account_name = clients[0].get("Login", "Direct Account")
+                else:
+                    account_name = "Direct Account"
+                return [{"login": account_name, "type": "CLIENT", "source": "Текущий аккаунт"}]
 
         elif service_type == ServiceType.metrika:
             resp = await client.get(
@@ -132,53 +132,67 @@ async def _check_account_status(account: MCPYandexAccount) -> dict:
     try:
         token = crypto.decrypt(account.encrypted_access_token)
         async with httpx.AsyncClient() as client:
-            resp = None
             if account.service_type == ServiceType.direct:
-                resp = await client.get(
+                resp = await client.post(
                     "https://api.direct.yandex.com/json/v5/clients",
-                    headers={"Authorization": f"Bearer {token}", "Accept-Language": "ru"},
-                    timeout=5,
+                    headers={
+                        "Authorization": f"Bearer {token}",
+                        "Accept-Language": "ru",
+                        "Content-Type": "application/json; charset=utf-8",
+                    },
+                    json={
+                        "method": "get",
+                        "params": {"SelectionCriteria": {}, "FieldNames": ["Login"]},
+                    },
+                    timeout=5.0,
                 )
             elif account.service_type == ServiceType.metrika:
                 resp = await client.get(
                     "https://api-metrika.yandex.net/management/v1/counters",
                     headers={"Authorization": f"OAuth {token}"},
-                    timeout=5,
+                    timeout=5.0,
                 )
             elif account.service_type == ServiceType.webmaster:
                 resp = await client.get(
-                    "https://api.webmaster.yandex.net/v4/user",
+                    "https://api.webmaster.yandex.net/v4/user/",
                     headers={"Authorization": f"OAuth {token}"},
-                    timeout=5,
+                    timeout=5.0,
                 )
             elif account.service_type == ServiceType.audience:
-                resp = await client.get(
-                    "https://api-audience.yandex.ru/v1/segments",
-                    headers={"Authorization": f"Bearer {token}"},
-                    timeout=5,
+                resp = await client.post(
+                    "https://audience-api.ads.yandex.net/management/v1/segments",
+                    headers={
+                        "Authorization": f"OAuth {token}",
+                        "Content-Type": "application/json",
+                    },
+                    json={"method": "get", "params": {"SelectionCriteria": {}}},
+                    timeout=5.0,
                 )
             elif account.service_type == ServiceType.admetrica:
                 resp = await client.get(
-                    "https://api.admetrica.yandex.com/v1/accounts",
-                    headers={"Authorization": f"Bearer {token}"},
-                    timeout=5,
+                    "https://api-metrika.yandex.net/management/v1/partners",
+                    headers={"Authorization": f"OAuth {token}"},
+                    timeout=5.0,
                 )
+            else:
+                resp = None
 
-            if resp:
-                if resp.status_code == 200:
-                    status["valid"] = True
-                    status["message"] = "Работает"
-                    status["color"] = "green"
-                elif resp.status_code == 401:
-                    status["message"] = "Токен недействителен"
-                    status["color"] = "red"
-                elif resp.status_code == 403:
-                    status["message"] = "Нет доступа"
-                    status["color"] = "red"
-                else:
-                    body = await resp.aread()
-                    status["message"] = f"Ошибка API ({resp.status_code})"
-                    status["color"] = "orange"
+            if resp and resp.status_code == 200:
+                status["valid"] = True
+                status["message"] = "Работает"
+                status["color"] = "green"
+            elif resp and resp.status_code == 401:
+                status["message"] = "Токен недействителен"
+                status["color"] = "red"
+            elif resp and resp.status_code == 403:
+                status["message"] = "Нет доступа к API"
+                status["color"] = "red"
+            else:
+                status["message"] = f"Ошибка API ({resp.status_code if resp else 'N/A'})"
+                status["color"] = "orange"
+    except httpx.TimeoutException:
+        status["message"] = "Timeout (сервер не отвечает)"
+        status["color"] = "orange"
     except Exception as e:
         status["message"] = f"Ошибка: {str(e)[:50]}"
         status["color"] = "red"
