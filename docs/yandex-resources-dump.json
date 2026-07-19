@@ -1,0 +1,32 @@
+[
+  {
+    "name": "direct_docs",
+    "uri": "yandex://direct/docs",
+    "description": "\n        Полная документация по Яндекс.Директ API.\n\n        ВКЛЮЧАЕТ: структуру кампаний, статусы, ограничения, best practices.\n        ",
+    "mimeType": "text/plain"
+  },
+  {
+    "name": "metrika_docs",
+    "uri": "yandex://metrika/docs",
+    "description": "Полная документация по Яндекс.Метрика API.",
+    "mimeType": "text/plain"
+  },
+  {
+    "name": "webmaster_docs",
+    "uri": "yandex://webmaster/docs",
+    "description": "Полная документация по Яндекс.Вебмастер API.",
+    "mimeType": "text/plain"
+  },
+  {
+    "name": "audience_docs",
+    "uri": "yandex://audience/docs",
+    "description": "Полная документация по Яндекс.Аудитории API.",
+    "mimeType": "text/plain"
+  },
+  {
+    "name": "admetrica_docs",
+    "uri": "yandex://admetrica/docs",
+    "description": "Полная документация по Яндекс.AdMetrica API.",
+    "mimeType": "text/plain"
+  }
+]

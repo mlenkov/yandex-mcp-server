@@ -1,0 +1,331 @@
+[
+  {
+    "name": "ping",
+    "description": "Проверить, что MCP-сервер работает и отвечает.\n\n    КОГДА ИСПОЛЬЗОВАТЬ:\n    - Для проверки здоровья сервера (healthcheck)\n    - Перед началом работы, чтобы убедиться в доступности\n\n    ВОЗВРАЩАЕТ: \"pong\"\n    ",
+    "inputSchema": {
+      "properties": {},
+      "title": "pingArguments",
+      "type": "object"
+    },
+    "outputSchema": {
+      "properties": {
+        "result": {
+          "title": "Result",
+          "type": "string"
+        }
+      },
+      "required": [
+        "result"
+      ],
+      "title": "pingOutput",
+      "type": "object"
+    }
+  },
+  {
+    "name": "list_yandex_accounts_tool",
+    "description": "Получить список всех настроенных Yandex-аккаунтов текущего пользователя.\n\n    КОГДА ИСПОЛЬЗОВАТЬ:\n    - Всегда вызывай ПЕРВЫМ, чтобы узнать доступные account_id и service_type\n    - Пользователь спрашивает \"какие у меня аккаунты\" или \"покажи мои сервисы\"\n\n    ВОЗВРАЩАЕТ: Массив объектов с полями id, account_name, service_type, is_active.\n\n    ПРИМЕР ИСПОЛЬЗОВАНИЯ:\n    Вызови этот инструмент → получи account_id → передай в API-инструменты.\n    ",
+    "inputSchema": {
+      "properties": {},
+      "title": "list_yandex_accounts_toolArguments",
+      "type": "object"
+    },
+    "outputSchema": {
+      "properties": {
+        "result": {
+          "items": {
+            "additionalProperties": true,
+            "type": "object"
+          },
+          "title": "Result",
+          "type": "array"
+        }
+      },
+      "required": [
+        "result"
+      ],
+      "title": "list_yandex_accounts_toolOutput",
+      "type": "object"
+    }
+  },
+  {
+    "name": "get_direct_campaigns_tool",
+    "description": "Получить список рекламных кампаний в Яндекс.Директе.\n\n    КОГДА ИСПОЛЬЗОВАТЬ:\n    - Пользователь спрашивает о статусе кампаний, бюджетах\n    - Нужно найти ID кампании для дальнейших действий\n\n    ПАРАМЕТРЫ:\n    - account_id: ID из list_yandex_accounts (опционально)\n    - limit: Максимум кампаний (1-500, по умолч. 100)\n\n    ВОЗВРАЩАЕТ: кампании с Id, Name, Status, StatusClarification.\n    ",
+    "inputSchema": {
+      "properties": {
+        "account_id": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Account Id"
+        },
+        "limit": {
+          "default": 100,
+          "title": "Limit",
+          "type": "integer"
+        }
+      },
+      "title": "get_direct_campaigns_toolArguments",
+      "type": "object"
+    }
+  },
+  {
+    "name": "get_metrika_counters_tool",
+    "description": "Получить список счётчиков Яндекс.Метрики.\n\n    КОГДА ИСПОЛЬЗОВАТЬ:\n    - Пользователь спрашивает о счётчиках и статистике\n    - Нужно получить ID счётчика для анализа данных\n\n    ПАРАМЕТРЫ:\n    - account_id: ID из list_yandex_accounts (опционально)\n    - limit: Максимум счётчиков (1-500, по умолч. 100)\n\n    ВОЗВРАЩАЕТ: счётчики с id, name, site, status.\n    ",
+    "inputSchema": {
+      "properties": {
+        "account_id": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Account Id"
+        },
+        "limit": {
+          "default": 100,
+          "title": "Limit",
+          "type": "integer"
+        }
+      },
+      "title": "get_metrika_counters_toolArguments",
+      "type": "object"
+    }
+  },
+  {
+    "name": "get_webmaster_hosts_tool",
+    "description": "Получить список сайтов (хостов) в Яндекс.Вебмастере.\n\n    КОГДА ИСПОЛЬЗОВАТЬ:\n    - Пользователь спрашивает о сайтах и индексации\n    - Нужно проверить статус верификации или индексации\n\n    ПАРАМЕТРЫ:\n    - account_id: ID из list_yandex_accounts (опционально)\n    - limit: Максимум хостов (1-500, по умолч. 100)\n\n    ВОЗВРАЩАЕТ: хосты с host_uid, host, verified, indexed.\n    ",
+    "inputSchema": {
+      "properties": {
+        "account_id": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Account Id"
+        },
+        "limit": {
+          "default": 100,
+          "title": "Limit",
+          "type": "integer"
+        }
+      },
+      "title": "get_webmaster_hosts_toolArguments",
+      "type": "object"
+    }
+  },
+  {
+    "name": "get_audience_segments_tool",
+    "description": "Получить список сегментов аудитории в Яндекс.Аудиториях.\n\n    КОГДА ИСПОЛЬЗОВАТЬ:\n    - Пользователь спрашивает о сегментах и аудиториях\n    - Нужно найти ID сегмента для таргетинга\n\n    ПАРАМЕТРЫ:\n    - account_id: ID из list_yandex_accounts (опционально)\n    - limit: Максимум сегментов (1-500, по умолч. 100)\n\n    ВОЗВРАЩАЕТ: сегменты с id, name, type, size.\n    ",
+    "inputSchema": {
+      "properties": {
+        "account_id": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Account Id"
+        },
+        "limit": {
+          "default": 100,
+          "title": "Limit",
+          "type": "integer"
+        }
+      },
+      "title": "get_audience_segments_toolArguments",
+      "type": "object"
+    }
+  },
+  {
+    "name": "get_admetrica_campaigns_tool",
+    "description": "Получить список рекламных кампаний в Яндекс.AdMetrica.\n\n    КОГДА ИСПОЛЬЗОВАТЬ:\n    - Пользователь спрашивает о кампаниях в AdMetrica\n    - Нужно найти ID кампании для анализа\n\n    ПАРАМЕТРЫ:\n    - account_id: ID из list_yandex_accounts (опционально)\n    - limit: Максимум кампаний (1-500, по умолч. 100)\n\n    ВОЗВРАЩАЕТ: кампании с id, name, status, type.\n    ",
+    "inputSchema": {
+      "properties": {
+        "account_id": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Account Id"
+        },
+        "limit": {
+          "default": 100,
+          "title": "Limit",
+          "type": "integer"
+        }
+      },
+      "title": "get_admetrica_campaigns_toolArguments",
+      "type": "object"
+    }
+  },
+  {
+    "name": "get_direct_stats_tool",
+    "description": "Получить статистику по кампании Яндекс.Директа за период.\n\n    КОГДА ИСПОЛЬЗОВАТЬ:\n    - Нужно проанализировать эффективность кампании\n    - Получить показы, клики, CTR, CPC, расходы, конверсии\n\n    ПАРАМЕТРЫ:\n    - campaign_id: ID кампании из get_direct_campaigns\n    - date_from: Начало периода в формате YYYY-MM-DD\n    - date_to: Конец периода в формате YYYY-MM-DD\n    - account_id: ID аккаунта (опционально)\n\n    ВОЗВРАЩАЕТ: метрики Impressions, Clicks, CTR, CPC, Cost, Conversions.\n    ",
+    "inputSchema": {
+      "properties": {
+        "campaign_id": {
+          "title": "Campaign Id",
+          "type": "integer"
+        },
+        "date_from": {
+          "title": "Date From",
+          "type": "string"
+        },
+        "date_to": {
+          "title": "Date To",
+          "type": "string"
+        },
+        "account_id": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Account Id"
+        }
+      },
+      "required": [
+        "campaign_id",
+        "date_from",
+        "date_to"
+      ],
+      "title": "get_direct_stats_toolArguments",
+      "type": "object"
+    }
+  },
+  {
+    "name": "get_direct_keywords_tool",
+    "description": "Получить список ключевых слов кампании Яндекс.Директа.\n\n    КОГДА ИСПОЛЬЗОВАТЬ:\n    - Нужно посмотреть ключевые слова и ставки\n    - Нужно найти ID фразы для изменения ставки\n\n    ПАРАМЕТРЫ:\n    - campaign_id: ID кампании из get_direct_campaigns\n    - account_id: ID аккаунта (опционально)\n    - limit: Максимум фраз (1-1000, по умолч. 500)\n\n    ВОЗВРАЩАЕТ: ключевые слова с Id, Keyword, Status, Bid.\n    ",
+    "inputSchema": {
+      "properties": {
+        "campaign_id": {
+          "title": "Campaign Id",
+          "type": "integer"
+        },
+        "account_id": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Account Id"
+        },
+        "limit": {
+          "default": 500,
+          "title": "Limit",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "campaign_id"
+      ],
+      "title": "get_direct_keywords_toolArguments",
+      "type": "object"
+    }
+  },
+  {
+    "name": "get_direct_ads_tool",
+    "description": "Получить список объявлений кампании Яндекс.Директа.\n\n    КОГДА ИСПОЛЬЗОВАТЬ:\n    - Нужно просмотреть все объявления кампании\n    - Нужно проверить статус модерации\n\n    ПАРАМЕТРЫ:\n    - campaign_id: ID кампании из get_direct_campaigns\n    - account_id: ID аккаунта (опционально)\n    - limit: Максимум объявлений (1-1000, по умолч. 500)\n\n    ВОЗВРАЩАЕТ: объявления с Id, Title, Text, Status, State.\n    ",
+    "inputSchema": {
+      "properties": {
+        "campaign_id": {
+          "title": "Campaign Id",
+          "type": "integer"
+        },
+        "account_id": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Account Id"
+        },
+        "limit": {
+          "default": 500,
+          "title": "Limit",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "campaign_id"
+      ],
+      "title": "get_direct_ads_toolArguments",
+      "type": "object"
+    }
+  },
+  {
+    "name": "update_account_context_tool",
+    "description": "Обновить контекст (мета-информацию) для аккаунта Яндекса.\n\n    КОГДА ИСПОЛЬЗОВАТЬ:\n    - Пользователь хочет добавить заметки к аккаунту\n    - Нужно указать \"это тестовый аккаунт\" или \"основной продакшн\"\n    - Нужно добавить бизнес-правила\n\n    ПАРАМЕТРЫ:\n    - account_id: ID аккаунта из list_yandex_accounts\n    - context: Текстовое описание (до 5000 символов)\n\n    ПРИМЕР: update_account_context(42, \"Основной аккаунт. CPA 500 руб.\")\n    ",
+    "inputSchema": {
+      "properties": {
+        "account_id": {
+          "title": "Account Id",
+          "type": "integer"
+        },
+        "context": {
+          "title": "Context",
+          "type": "string"
+        }
+      },
+      "required": [
+        "account_id",
+        "context"
+      ],
+      "title": "update_account_context_toolArguments",
+      "type": "object"
+    }
+  },
+  {
+    "name": "get_account_context_tool",
+    "description": "Получить контекст (мета-информацию) аккаунта Яндекса.\n\n    КОГДА ИСПОЛЬЗОВАТЬ:\n    - Перед выполнением действий с аккаунтом\n    - Чтобы понять бизнес-правила и ограничения\n\n    ВОЗВРАЩАЕТ: {\"account_id\": 42, \"context\": \"...\"}\n    ",
+    "inputSchema": {
+      "properties": {
+        "account_id": {
+          "title": "Account Id",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "account_id"
+      ],
+      "title": "get_account_context_toolArguments",
+      "type": "object"
+    }
+  }
+]

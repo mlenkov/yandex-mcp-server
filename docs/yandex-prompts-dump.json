@@ -1,0 +1,36 @@
+[
+  {
+    "name": "analyze_campaign_performance",
+    "description": "Анализ эффективности рекламной кампании за последние N дней.",
+    "arguments": [
+      {
+        "name": "campaign_id",
+        "required": true
+      },
+      {
+        "name": "days",
+        "required": false
+      }
+    ]
+  },
+  {
+    "name": "suggest_budget_optimization",
+    "description": "Предложения по оптимизации бюджета рекламных кампаний.",
+    "arguments": [
+      {
+        "name": "account_id",
+        "required": false
+      }
+    ]
+  },
+  {
+    "name": "find_underperforming_ads",
+    "description": "Поиск неэффективных объявлений для оптимизации.",
+    "arguments": [
+      {
+        "name": "account_id",
+        "required": false
+      }
+    ]
+  }
+]
