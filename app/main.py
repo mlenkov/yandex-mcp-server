@@ -9,6 +9,8 @@ from app.tools.webmaster import get_webmaster_hosts
 from app.tools.audience import get_audience_segments
 from app.tools.admetrica import get_admetrica_campaigns
 from app.tools.account_management import update_account_context, get_account_context
+from app.tools.wordstat import get_wordstat_stats
+from app.tools.feedback import submit_feedback
 from app.resources.yandex_docs import register_resources
 from app.prompts.yandex_scenarios import register_prompts
 
@@ -22,7 +24,15 @@ register_resources(mcp)
 register_prompts(mcp)
 
 
-@mcp.tool()
+@mcp.tool(
+    annotations={
+        "title": "Ping",
+        "readOnlyHint": True,
+        "destructiveHint": False,
+        "idempotentHint": True,
+        "openWorldHint": False,
+    }
+)
 async def ping() -> str:
     """Проверить, что MCP-сервер работает и отвечает.
 
@@ -35,7 +45,15 @@ async def ping() -> str:
     return "pong"
 
 
-@mcp.tool()
+@mcp.tool(
+    annotations={
+        "title": "List Yandex Accounts",
+        "readOnlyHint": True,
+        "destructiveHint": False,
+        "idempotentHint": True,
+        "openWorldHint": False,
+    }
+)
 async def list_yandex_accounts_tool(ctx: Context) -> list[dict]:
     """Получить список всех настроенных Yandex-аккаунтов текущего пользователя.
 
@@ -51,7 +69,15 @@ async def list_yandex_accounts_tool(ctx: Context) -> list[dict]:
     return await list_yandex_accounts(ctx)
 
 
-@mcp.tool()
+@mcp.tool(
+    annotations={
+        "title": "Get Direct Campaigns",
+        "readOnlyHint": True,
+        "destructiveHint": False,
+        "idempotentHint": True,
+        "openWorldHint": False,
+    }
+)
 async def get_direct_campaigns_tool(
     ctx: Context,
     account_id: int | None = None,
@@ -72,7 +98,15 @@ async def get_direct_campaigns_tool(
     return await get_direct_campaigns(ctx, account_id, limit)
 
 
-@mcp.tool()
+@mcp.tool(
+    annotations={
+        "title": "Get Metrika Counters",
+        "readOnlyHint": True,
+        "destructiveHint": False,
+        "idempotentHint": True,
+        "openWorldHint": False,
+    }
+)
 async def get_metrika_counters_tool(
     ctx: Context,
     account_id: int | None = None,
@@ -93,7 +127,15 @@ async def get_metrika_counters_tool(
     return await get_metrika_counters(ctx, account_id, limit)
 
 
-@mcp.tool()
+@mcp.tool(
+    annotations={
+        "title": "Get Webmaster Hosts",
+        "readOnlyHint": True,
+        "destructiveHint": False,
+        "idempotentHint": True,
+        "openWorldHint": False,
+    }
+)
 async def get_webmaster_hosts_tool(
     ctx: Context,
     account_id: int | None = None,
@@ -114,7 +156,15 @@ async def get_webmaster_hosts_tool(
     return await get_webmaster_hosts(ctx, account_id, limit)
 
 
-@mcp.tool()
+@mcp.tool(
+    annotations={
+        "title": "Get Audience Segments",
+        "readOnlyHint": True,
+        "destructiveHint": False,
+        "idempotentHint": True,
+        "openWorldHint": False,
+    }
+)
 async def get_audience_segments_tool(
     ctx: Context,
     account_id: int | None = None,
@@ -135,7 +185,15 @@ async def get_audience_segments_tool(
     return await get_audience_segments(ctx, account_id, limit)
 
 
-@mcp.tool()
+@mcp.tool(
+    annotations={
+        "title": "Get AdMetrica Campaigns",
+        "readOnlyHint": True,
+        "destructiveHint": False,
+        "idempotentHint": True,
+        "openWorldHint": False,
+    }
+)
 async def get_admetrica_campaigns_tool(
     ctx: Context,
     account_id: int | None = None,
@@ -156,7 +214,15 @@ async def get_admetrica_campaigns_tool(
     return await get_admetrica_campaigns(ctx, account_id, limit)
 
 
-@mcp.tool()
+@mcp.tool(
+    annotations={
+        "title": "Get Direct Stats",
+        "readOnlyHint": True,
+        "destructiveHint": False,
+        "idempotentHint": True,
+        "openWorldHint": False,
+    }
+)
 async def get_direct_stats_tool(
     ctx: Context,
     campaign_id: int,
@@ -181,7 +247,15 @@ async def get_direct_stats_tool(
     return await get_direct_stats(ctx, campaign_id, date_from, date_to, account_id)
 
 
-@mcp.tool()
+@mcp.tool(
+    annotations={
+        "title": "Get Direct Keywords",
+        "readOnlyHint": True,
+        "destructiveHint": False,
+        "idempotentHint": True,
+        "openWorldHint": False,
+    }
+)
 async def get_direct_keywords_tool(
     ctx: Context,
     campaign_id: int,
@@ -204,7 +278,15 @@ async def get_direct_keywords_tool(
     return await get_direct_keywords(ctx, campaign_id, account_id, limit)
 
 
-@mcp.tool()
+@mcp.tool(
+    annotations={
+        "title": "Get Direct Ads",
+        "readOnlyHint": True,
+        "destructiveHint": False,
+        "idempotentHint": True,
+        "openWorldHint": False,
+    }
+)
 async def get_direct_ads_tool(
     ctx: Context,
     campaign_id: int,
@@ -227,7 +309,15 @@ async def get_direct_ads_tool(
     return await get_direct_ads(ctx, campaign_id, account_id, limit)
 
 
-@mcp.tool()
+@mcp.tool(
+    annotations={
+        "title": "Update Account Context",
+        "readOnlyHint": False,
+        "destructiveHint": False,
+        "idempotentHint": True,
+        "openWorldHint": False,
+    }
+)
 async def update_account_context_tool(account_id: int, context: str) -> dict:
     """Обновить контекст (мета-информацию) для аккаунта Яндекса.
 
@@ -245,7 +335,15 @@ async def update_account_context_tool(account_id: int, context: str) -> dict:
     return await update_account_context(account_id, context)
 
 
-@mcp.tool()
+@mcp.tool(
+    annotations={
+        "title": "Get Account Context",
+        "readOnlyHint": True,
+        "destructiveHint": False,
+        "idempotentHint": True,
+        "openWorldHint": False,
+    }
+)
 async def get_account_context_tool(account_id: int) -> dict:
     """Получить контекст (мета-информацию) аккаунта Яндекса.
 
@@ -256,6 +354,71 @@ async def get_account_context_tool(account_id: int) -> dict:
     ВОЗВРАЩАЕТ: {"account_id": 42, "context": "..."}
     """
     return await get_account_context(account_id)
+
+
+@mcp.tool(
+    annotations={
+        "title": "Get Wordstat Stats",
+        "readOnlyHint": True,
+        "destructiveHint": False,
+        "idempotentHint": True,
+        "openWorldHint": False,
+    }
+)
+async def get_wordstat_stats_tool(
+    ctx: Context,
+    query: str,
+    region: str | None = None,
+    account_id: int | None = None,
+) -> dict:
+    """Получить частотность ключевых слов через Яндекс.Wordstat.
+
+    КОГДА ИСПОЛЬЗОВАТЬ:
+    - Нужно узнать частотность ключевых слов перед запуском кампании
+    - Подбор семантики для SEO и контекстной рекламы
+
+    ПАРАМЕТРЫ:
+    - query: Поисковый запрос (обязательно)
+    - region: ID региона (опционально)
+    - account_id: ID аккаунта Директа (опционально)
+
+    ПРИМЕР: get_wordstat_stats("купить цветы", region=213)
+    """
+    return await get_wordstat_stats(ctx, query, region, account_id)
+
+
+@mcp.tool(
+    annotations={
+        "title": "Submit Feedback",
+        "readOnlyHint": False,
+        "destructiveHint": False,
+        "idempotentHint": True,
+        "openWorldHint": False,
+    }
+)
+async def submit_feedback_tool(
+    ctx: Context,
+    reason: str,
+    attempted_tool: str = "",
+    agent_summary: str = "",
+    account_id: int | None = None,
+) -> dict:
+    """Отправить обратную связь о работе MCP-сервера.
+
+    КОГДА ИСПОЛЬЗОВАТЬ:
+    - LLM получила некорректный ответ или ошибку
+    - Инструмент не сработал как ожидалось
+    - Нужно сообщить о проблеме разработчикам
+
+    ПАРАМЕТРЫ:
+    - reason: Причина (tool_error, wrong_data, missing_feature, other)
+    - attempted_tool: Имя инструмента
+    - agent_summary: Краткое описание (до 500 символов)
+    - account_id: ID аккаунта (опционально)
+
+    ВОЗВРАЩАЕТ: {"status": "ok", "feedback_id": "uuid"}
+    """
+    return await submit_feedback(ctx, reason, attempted_tool, agent_summary, account_id)
 
 
 if __name__ == "__main__":

@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Add Integration</h1>
+<p>Choose a Yandex service to connect:</p>
+<div class="service-grid">
+    {% for svc in services %}
+    <a href="/admin/oauth/start?service={{ svc.type }}" class="service-card">
+        <div class="service-icon">
+            {% if svc.type == "direct" %}
+            📊
+            {% elif svc.type == "metrika" %}
+            📈
+            {% elif svc.type == "webmaster" %}
+            🔍
+            {% elif svc.type == "audience" %}
+            👥
+            {% elif svc.type == "admetrica" %}
+            📱
+            {% endif %}
+        </div>
+        <div class="service-name">{{ svc.label }}</div>
+        <div class="service-action">Connect →</div>
+    </a>
+    {% endfor %}
+</div>
+{% endblock %}

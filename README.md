@@ -5,9 +5,9 @@
 [![MCP](https://img.shields.io/badge/MCP-Streamable%20HTTP-green)](https://modelcontextprotocol.io)
 [![Docker](https://img.shields.io/badge/Docker-multi--stage-2496ED?logo=docker)](https://docker.com)
 
-MCP-сервер для API Яндекса: Direct, Metrika, Audience, AdMetrica, Webmaster.
+MCP-сервер для API Яндекса: Direct, Metrika, Audience, Webmaster, AdMetrica + Admin Panel.
 
-**Архитектура:** FastMCP + apiforge async + SQLAlchemy (Dual DB: SQLite/MySQL)
+**Архитектура:** FastMCP + apiforge async + SQLAlchemy (Dual DB: SQLite/MySQL) + FastAPI Admin
 
 ## 🏆 Why this is better than Atlas MCP
 
@@ -78,15 +78,38 @@ docker exec mais-yandex-mcp uv run alembic upgrade head
 curl http://localhost:8000/ping
 ```
 
+## Admin Panel
+
+Web UI для управления интеграциями с Яндексом. Доступен после деплоя.
+
+| Route | Описание |
+|---|---|
+| `/admin/` | Dashboard — список интеграций, статус токенов |
+| `/admin/integrations/add` | Добавить интеграцию (Direct, Metrika и т.д.) |
+| `/admin/oauth/callback` | OAuth callback для Yandex |
+
+**Стек:** FastAPI + Jinja2 + общая БД с MCP-сервером.
+
 ## Настройка Bifrost
 
 Bifrost должен проксировать заголовок `X-Bifrost-User-Id` при подключении к MCP-серверу. MCP-сервер слушает на `/mcp` (Streamable HTTP).
 
 ```caddy
 app.mais.agency {
+    # Admin panel (protected by Yandex OAuth)
+    @admin path /admin/*
+    handle @admin {
+        forward_auth auth:4180 {
+            uri /auth
+        }
+        reverse_proxy mais-yandex-admin:8100
+    }
+
     # MCP endpoint
-    reverse_proxy /mcp/* yandex-mcp:8000 {
-        header_up X-Bifrost-User-Id {http.request.header.X-Bifrost-User-Id}
+    handle @mcp {
+        reverse_proxy /mcp/* yandex-mcp:8000 {
+            header_up X-Bifrost-User-Id {http.request.header.X-Bifrost-User-Id}
+        }
     }
 
     # Bifrost UI
@@ -94,7 +117,7 @@ app.mais.agency {
 }
 ```
 
-## Доступные MCP-инструменты (12)
+## Доступные MCP-инструменты (14)
 
 | Инструмент | Описание |
 |-----------|----------|
@@ -108,8 +131,10 @@ app.mais.agency {
 | `get_direct_stats` | Статистика кампании (Impressions, Clicks, CTR, CPC, Cost, Conversions) |
 | `get_direct_keywords` | Ключевые слова кампании |
 | `get_direct_ads` | Объявления кампании (Title, Text, Status, State) |
+| `get_wordstat_stats` | Частотность ключевых слов (Wordstat) |
 | `get_account_context` | Получить контекст аккаунта (бизнес-правила, заметки) |
 | `update_account_context` | Обновить контекст аккаунта |
+| `submit_feedback` | Отправить обратную связь о работе сервера |
 
 ## MCP Resources (5)
 
@@ -291,10 +316,7 @@ curl -X POST http://localhost:8000/mcp \
 
 ## Contributing
 
-1. Форкни репозиторий и создай ветку: `git checkout -b feature/my-feature`
-2. Установи dev-зависимости: `uv sync`
-3. Убедись, что тесты проходят: `uv run pytest`
-4. Открой Pull Request
+См. [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## License
 
@@ -334,10 +356,23 @@ app/
 │   ├── webmaster.py        # get_webmaster_hosts
 │   ├── audience.py         # get_audience_segments
 │   ├── admetrica.py        # get_admetrica_campaigns
-│   └── account_management.py  # get/update_account_context
+│   ├── account_management.py  # get/update_account_context
+│   ├── wordstat.py         # get_wordstat_stats
+│   └── feedback.py         # submit_feedback
 ├── resources/
 │   └── yandex_docs.py      # MCP Resources: 5 API documentation endpoints
 ├── prompts/
 │   └── yandex_scenarios.py # MCP Prompts: 3 analysis scenarios
-└── yandex_configs/         # JSON-конфиги для apiforge
+├── yandex_configs/         # JSON-конфиги для apiforge
+admin/
+├── app.py                  # FastAPI admin panel
+├── templates/              # Jinja2 HTML шаблоны
+└── static/                 # CSS
+docs/                       # Документация и JSON-RPC дампы
+├── atlas-mcp-connection.md
+├── yandex-mcp-connection.md
+├── yandex-tools-dump.json
+├── yandex-resources-dump.json
+├── yandex-prompts-dump.json
+└── ...
 ```

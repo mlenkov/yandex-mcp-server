@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Integrations</h1>
+{% if integrations %}
+<table>
+    <thead>
+        <tr>
+            <th>Service</th>
+            <th>Account</th>
+            <th>Token</th>
+            <th>Context</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for acc in integrations %}
+        <tr>
+            <td>{{ service_labels.get(acc.service_type, acc.service_type.value) }}</td>
+            <td>{{ acc.account_name }}</td>
+            <td>
+                {% set st = token_status(acc.token_expires_at) %}
+                {% if st == "valid" %}
+                <span class="badge badge-ok">OK</span>
+                {% elif st == "expiring_soon" %}
+                <span class="badge badge-warn">Expiring</span>
+                {% else %}
+                <span class="badge badge-err">Expired</span>
+                {% endif %}
+            </td>
+            <td class="context-cell">
+                {% if acc.account_context %}
+                <span class="context-text">{{ acc.account_context[:100] }}{% if acc.account_context|length > 100 %}...{% endif %}</span>
+                {% else %}
+                <span class="muted">—</span>
+                {% endif %}
+            </td>
+            <td>
+                <form action="/admin/integrations/{{ acc.id }}/delete" method="post" style="display:inline">
+                    <button class="btn btn-danger btn-sm" onclick="return confirm('Delete {{ acc.account_name }}?')">Delete</button>
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<div class="empty-state">
+    <p>No integrations yet.</p>
+    <a href="/admin/integrations/add" class="btn">Add your first integration</a>
+</div>
+{% endif %}
+{% endblock %}
