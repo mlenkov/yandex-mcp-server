@@ -1,0 +1,23 @@
+<dialog id="addModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2>Как добавить аккаунт?</h2>
+            <button class="modal-close" onclick="document.getElementById('addModal').close()">&times;</button>
+        </div>
+        <div class="modal-body">
+            <p class="modal-desc">Выберите способ подключения {{ service_label }}. Логин можно оставить пустым. Если укажете его, подойдёт логин OAuth-профиля или логин целевого кабинета, который нужно импортировать.</p>
+            <div class="modal-actions">
+                <a href="/admin/oauth/start?service={{ service }}" class="btn btn-primary btn-lg">
+                    Войти через Яндекс
+                </a>
+                <button class="btn btn-secondary btn-lg" onclick="document.getElementById('manualForm').classList.remove('hidden'); this.style.display='none'">
+                    Через токен
+                </button>
+                <button class="btn btn-tertiary btn-lg" onclick="document.getElementById('addModal').close()">
+                    Отмена
+                </button>
+            </div>
+            {% include "partials/manual_form.html" %}
+        </div>
+    </div>
+</dialog>

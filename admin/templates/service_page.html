@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="service-page-header">
+    <div>
+        <h1>Интеграция с {{ service_label }}</h1>
+        <p class="service-desc">Здесь можно управлять аккаунтами {{ service_label }}. Вход через Яндекс используется только как шаг для выбора логинов.</p>
+    </div>
+    <button class="btn btn-primary" onclick="document.getElementById('addModal').showModal()">
+        + Добавить аккаунт
+    </button>
+</div>
+
+{% if integrations %}
+<div class="account-grid">
+    {% for acc in integrations %}
+        {% include "partials/account_card.html" %}
+    {% endfor %}
+</div>
+{% else %}
+    {% include "partials/empty_state.html" %}
+{% endif %}
+
+{% include "partials/add_modal.html" %}
+
+<script>
+function updateCounter(el) {
+    document.getElementById('contextCounter').textContent = el.value.length;
+}
+
+function addGoalRow() {
+    var table = document.getElementById('goalsTable').querySelector('tbody');
+    var row = table.insertRow();
+    row.innerHTML = `
+        <td><input type="number" name="goal_ids" class="goal-id" placeholder="12345"></td>
+        <td><input type="text" name="goal_names" class="goal-name" placeholder="Обратный звонок"></td>
+        <td><button type="button" class="btn btn-sm btn-danger" onclick="this.closest('tr').remove()">Удалить</button></td>
+    `;
+}
+</script>
+{% endblock %}

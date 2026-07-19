@@ -1,7 +1,8 @@
 from datetime import datetime, timedelta, timezone
+from typing import Optional
 
 import httpx
-from fastapi import FastAPI, Query, Request
+from fastapi import FastAPI, Form, Query, Request
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
@@ -66,44 +67,34 @@ def _token_status(expires_at: datetime | None) -> str:
 @app.get("/admin/", response_class=HTMLResponse)
 async def dashboard(request: Request):
     email = _user_email(request)
-    user = await _get_or_create_user(email)
-    async with async_session_factory() as session:
-        result = await session.execute(
-            select(MCPYandexAccount).where(MCPYandexAccount.user_id == user.id)
-        )
-        integrations = result.scalars().all()
     return templates.TemplateResponse(request, "dashboard.html", {
         "user_email": email,
-        "integrations": integrations,
-        "token_status": _token_status,
         "service_labels": SERVICE_LABELS,
+        "service_types": list(ServiceType),
     })
 
 
-@app.get("/admin/integrations", response_class=HTMLResponse)
-async def integrations_list(request: Request):
+@app.get("/admin/integrations/{service}", response_class=HTMLResponse)
+async def service_page(service: str, request: Request):
+    service_type = ServiceType(service)
     email = _user_email(request)
     user = await _get_or_create_user(email)
     async with async_session_factory() as session:
         result = await session.execute(
-            select(MCPYandexAccount).where(MCPYandexAccount.user_id == user.id)
+            select(MCPYandexAccount).where(
+                MCPYandexAccount.user_id == user.id,
+                MCPYandexAccount.service_type == service_type,
+            )
         )
         integrations = result.scalars().all()
-    return templates.TemplateResponse(request, "dashboard.html", {
+    return templates.TemplateResponse(request, "service_page.html", {
         "user_email": email,
+        "service": service,
+        "service_label": SERVICE_LABELS[service_type],
         "integrations": integrations,
         "token_status": _token_status,
         "service_labels": SERVICE_LABELS,
-    })
-
-
-@app.get("/admin/integrations/add", response_class=HTMLResponse)
-async def add_integration_page(request: Request):
-    return templates.TemplateResponse(request, "add_integration.html", {
-        "services": [
-            {"type": st.value, "label": SERVICE_LABELS[st]}
-            for st in ServiceType
-        ],
+        "client_id": settings.yandex_client_id,
     })
 
 
@@ -111,7 +102,7 @@ async def add_integration_page(request: Request):
 async def oauth_start(service: str, request: Request):
     service_type = ServiceType(service)
     scope = SERVICE_SCOPES[service_type]
-    state = crypto.fernet.encrypt(f"{service}:{_user_email(request)}".encode()).decode()
+    state = crypto.encrypt(f"{service}:{_user_email(request)}")
     oauth_url = (
         f"https://oauth.yandex.com/authorize?"
         f"response_type=code&"
@@ -133,7 +124,7 @@ async def oauth_callback(code: str = Query(...), state: str = Query(...), reques
     if not state_cookie or state_cookie != state:
         return HTMLResponse("Invalid state (CSRF)", status_code=403)
     try:
-        decrypted = crypto.fernet.decrypt(state.encode()).decode()
+        decrypted = crypto.decrypt(state)
         service_str, _ = decrypted.split(":", 1)
     except Exception:
         return HTMLResponse("Invalid state", status_code=403)
@@ -171,9 +162,56 @@ async def oauth_callback(code: str = Query(...), state: str = Query(...), reques
         )
         session.add(account)
         await session.commit()
-    resp = RedirectResponse("/admin/")
+    resp = RedirectResponse(f"/admin/integrations/{service_str}")
     resp.delete_cookie("oauth_state")
     return resp
+
+
+@app.post("/admin/integrations/{service}/add")
+async def add_manual_integration(
+    service: str,
+    request: Request,
+    account_name: str = Form(""),
+    login: str = Form(...),
+    oauth_token: str = Form(...),
+    shared_account_id: Optional[int] = Form(None),
+    context: str = Form(""),
+):
+    service_type = ServiceType(service)
+    user_email = _user_email(request)
+    user = await _get_or_create_user(user_email)
+
+    # Validate token
+    async with httpx.AsyncClient() as client:
+        validate_resp = await client.post(
+            "https://api.direct.yandex.com/json/v5/campaigns",
+            json={"method": "get", "params": {"SelectionCriteria": {}, "FieldNames": ["Id"]}},
+            headers={"Authorization": f"Bearer {oauth_token}", "Accept-Language": "ru"},
+            timeout=10,
+        )
+        if validate_resp.status_code in (401, 403):
+            return HTMLResponse(
+                f"<html><body><h1>Ошибка: невалидный токен</h1>"
+                f"<p>Код ответа: {validate_resp.status_code}</p>"
+                f"<a href='/admin/integrations/{service}'>Назад</a></body></html>",
+                status_code=400,
+            )
+
+    async with async_session_factory() as session:
+        account = MCPYandexAccount(
+            user_id=user.id,
+            account_name=account_name or f"{login} ({service_type.value})",
+            service_type=service_type,
+            encrypted_access_token=crypto.encrypt(oauth_token),
+            encrypted_refresh_token=None,
+            token_expires_at=None,
+            account_context=context or None,
+            is_active=True,
+        )
+        session.add(account)
+        await session.commit()
+
+    return RedirectResponse(f"/admin/integrations/{service}", status_code=303)
 
 
 @app.post("/admin/integrations/{account_id}/delete")
@@ -191,7 +229,8 @@ async def delete_integration(account_id: int, request: Request):
         if account:
             account.is_active = False
             await session.commit()
-    return RedirectResponse("/admin/")
+    ref = request.headers.get("Referer", "/admin/")
+    return RedirectResponse(ref)
 
 
 @app.get("/admin/ping")

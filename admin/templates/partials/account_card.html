@@ -1,0 +1,29 @@
+<div class="account-card">
+    <div class="account-card-header">
+        <div class="account-name">{{ acc.account_name }}</div>
+        <div class="account-actions">
+            <form action="/admin/integrations/{{ acc.id }}/delete" method="post" style="display:inline"
+                  onsubmit="return confirm('Удалить {{ acc.account_name }}?')">
+                <button class="btn btn-sm btn-danger">Удалить</button>
+            </form>
+        </div>
+    </div>
+    <div class="account-card-body">
+        {% set st = token_status(acc.token_expires_at) %}
+        <div class="token-status">
+            <span class="status-dot status-{{ st }}"></span>
+            {% if st == "valid" %}
+                Действителен до {{ acc.token_expires_at.strftime('%d.%m.%Y') if acc.token_expires_at else 'долгосрочный' }}
+            {% elif st == "expiring_soon" %}
+                Истекает {{ acc.token_expires_at.strftime('%d.%m.%Y') }}
+            {% elif st == "expired" %}
+                Истёк
+            {% else %}
+                Статус неизвестен
+            {% endif %}
+        </div>
+        {% if acc.account_context %}
+        <div class="context-preview">{{ acc.account_context[:100] }}{% if acc.account_context|length > 100 %}...{% endif %}</div>
+        {% endif %}
+    </div>
+</div>

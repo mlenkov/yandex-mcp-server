@@ -1,0 +1,70 @@
+<div id="manualForm" class="manual-form hidden">
+    <form action="/admin/integrations/{{ service }}/add" method="post">
+        <p class="form-section-title">Заполните данные для подключения</p>
+
+        <div class="form-group">
+            <label for="account_name">Название аккаунта</label>
+            <input type="text" id="account_name" name="account_name" placeholder="Клиент Петров">
+            <span class="form-hint">Просто название для вашего удобства</span>
+        </div>
+
+        <div class="form-group">
+            <label for="login">Логин аккаунта <span class="required">*</span></label>
+            <input type="text" id="login" name="login" required placeholder="login">
+            <span class="form-hint">Логин аккаунта Яндекса без @yandex.ru</span>
+        </div>
+
+        <div class="form-group">
+            <label for="oauth_token">OAuth токен <span class="required">*</span></label>
+            <input type="password" id="oauth_token" name="oauth_token" required>
+            <span class="form-hint">
+                Токен можно получить
+                <a href="https://oauth.yandex.com/authorize?response_type=token&client_id={{ client_id }}&force_confirm=true" target="_blank" rel="noopener">здесь</a>
+            </span>
+        </div>
+
+        <div class="form-group">
+            <label for="shared_account_id">ID общего счёта</label>
+            <input type="number" id="shared_account_id" name="shared_account_id" placeholder="123456">
+            <span class="form-hint">Числовой ID общего счёта Яндекс.Директа. Укажите вручную, если система не смогла определить его по логину.</span>
+        </div>
+
+        <div class="form-group">
+            <label for="context">Контекст аккаунта</label>
+            <textarea id="context" name="context" rows="4" placeholder="## Цели
+- Основной KPI: CPA
+- Проверять трафик по бренду отдельно" maxlength="8000" oninput="updateCounter(this)"></textarea>
+            <span class="form-hint">
+                Этот текст агент может запрашивать как дополнительный контекст по аккаунту.
+                <span class="char-counter">Сейчас: <span id="contextCounter">0</span> / 8000</span>
+            </span>
+        </div>
+
+        <div class="form-group">
+            <label>Укажите ID целей и их названия</label>
+            <span class="form-hint">ID целей можно получить из раздела «Цели» в Яндекс.Метрике</span>
+            <table class="goals-table" id="goalsTable">
+                <thead>
+                    <tr>
+                        <th>ID цели</th>
+                        <th>Название цели</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><input type="number" name="goal_ids" class="goal-id" placeholder="12345"></td>
+                        <td><input type="text" name="goal_names" class="goal-name" placeholder="Обратный звонок"></td>
+                        <td><button type="button" class="btn btn-sm btn-danger" onclick="this.closest('tr').remove()">Удалить</button></td>
+                    </tr>
+                </tbody>
+            </table>
+            <button type="button" class="btn btn-sm btn-secondary" onclick="addGoalRow()">+ Добавить цель</button>
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">Проверить и добавить</button>
+            <button type="button" class="btn btn-tertiary" onclick="document.getElementById('addModal').close()">Отмена</button>
+        </div>
+    </form>
+</div>
