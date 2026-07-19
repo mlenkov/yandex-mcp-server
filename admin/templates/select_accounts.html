@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Выбор аккаунтов {{ service_label }}</h1>
+<p class="service-desc">Выберите аккаунты, которые нужно подключить для работы с {{ service_label }}.</p>
+
+<form method="POST" action="/admin/oauth/save-accounts">
+    {% if accounts %}
+    <div class="account-grid" style="margin: 24px 0;">
+        {% for acc in accounts %}
+        <div class="account-card selectable">
+            <label>
+                <input type="checkbox" name="selected_accounts" value="{{ acc.login }}" class="account-checkbox">
+                <div class="account-card-body">
+                    <strong>{{ acc.login }}</strong><br>
+                    {% if acc.source %}
+                    <small>Источник: {{ acc.source }}</small><br>
+                    {% endif %}
+                    {% if acc.get("type") %}
+                    <small>Тип: {{ acc.type }}</small>
+                    {% endif %}
+                </div>
+            </label>
+        </div>
+        {% endfor %}
+    </div>
+
+    <p style="margin-bottom: 16px;">Выбрано аккаунтов: <span id="selected-count">0</span></p>
+
+    <div class="form-actions">
+        <button type="submit" class="btn btn-primary">Подключить выбранные аккаунты</button>
+        <a href="/admin/integrations/{{ service }}" class="btn btn-tertiary">Отмена</a>
+    </div>
+    {% else %}
+    <div class="empty-state">
+        <p>Не удалось получить список аккаунтов. Возможно, у токена нет доступа к управлению аккаунтами.</p>
+        <a href="/admin/integrations/{{ service }}" class="btn">Назад</a>
+    </div>
+    {% endif %}
+</form>
+
+<script>
+document.querySelectorAll('input[name="selected_accounts"]').forEach(function(cb) {
+    cb.addEventListener('change', function() {
+        var count = document.querySelectorAll('input[name="selected_accounts"]:checked').length;
+        document.getElementById('selected-count').textContent = count;
+    });
+});
+</script>
+{% endblock %}

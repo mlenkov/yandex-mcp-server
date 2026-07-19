@@ -60,6 +60,16 @@ tr:not(:last-child) td { border-bottom: 1px solid #e8e8ed; }
 .status-unknown { background: #a1a1a6; }
 .context-preview { font-size: 12px; color: #a1a1a6; background: #f5f5f7; padding: 8px 12px; border-radius: 6px; white-space: pre-wrap; line-height: 1.4; }
 
+.account-card h3 { font-size: 16px; margin-bottom: 4px; }
+.status-badge { display: inline-block; padding: 3px 10px; border-radius: 12px; font-size: 12px; font-weight: 600; color: #fff; }
+.warning-box { font-size: 12px; color: #e65100; background: #fff3e0; padding: 8px 12px; border-radius: 6px; margin-top: 8px; }
+.warning-box a { color: #e65100; font-weight: 600; }
+
+.selectable { cursor: pointer; transition: box-shadow 0.2s; }
+.selectable:hover { box-shadow: 0 2px 8px rgba(0,0,0,0.12); }
+.selectable label { display: flex; align-items: center; gap: 12px; cursor: pointer; }
+.account-checkbox { width: 18px; height: 18px; }
+
 .btn-primary { background: #0071e3; color: #fff; }
 .btn-primary:hover { background: #0077ed; }
 .btn-secondary { background: #e8e8ed; color: #1d1d1f; }

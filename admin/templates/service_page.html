@@ -13,7 +13,34 @@
 {% if integrations %}
 <div class="account-grid">
     {% for acc in integrations %}
-        {% include "partials/account_card.html" %}
+    {% set status = account_statuses.get(acc.id, {"valid": False, "message": "—", "color": "gray", "goals_configured": false}) %}
+    <div class="account-card" style="border-left: 4px solid {{ status.color }};">
+        <div class="account-card-header">
+            <h3>{{ acc.account_name }}</h3>
+            <div class="account-actions">
+                <a href="/admin/integrations/{{ service }}/edit/{{ acc.id }}" class="btn btn-sm btn-secondary">Редактировать</a>
+                <form action="/admin/integrations/{{ acc.id }}/delete" method="post" style="display:inline"
+                      onsubmit="return confirm('Удалить {{ acc.account_name }}?')">
+                    <button class="btn btn-sm btn-danger">Удалить</button>
+                </form>
+            </div>
+        </div>
+        <div class="account-card-body">
+            <p>
+                <span class="status-badge" style="background: {{ status.color }};">
+                    {{ status.message }}
+                </span>
+            </p>
+            {% if not status.goals_configured %}
+            <div class="warning-box">
+                ⚠️ Цели не настроены. <a href="/admin/integrations/{{ service }}/edit/{{ acc.id }}">Настроить</a>
+            </div>
+            {% endif %}
+            {% if acc.account_context %}
+            <div class="context-preview">{{ acc.account_context[:100] }}{% if acc.account_context|length > 100 %}...{% endif %}</div>
+            {% endif %}
+        </div>
+    </div>
     {% endfor %}
 </div>
 {% else %}
