@@ -115,13 +115,18 @@ async def _check_account_status(account: MCPYandexAccount) -> dict:
         "goals_configured": False,
     }
 
-    if account.token_expires_at:
-        if account.token_expires_at < datetime.now(timezone.utc):
+    expires_at = account.token_expires_at
+    if expires_at is not None and expires_at.tzinfo is None:
+        expires_at = expires_at.replace(tzinfo=timezone.utc)
+
+    if expires_at is not None:
+        now = datetime.now(timezone.utc)
+        if expires_at < now:
             status["message"] = "Токен истёк"
             status["color"] = "red"
             return status
-        elif account.token_expires_at < datetime.now(timezone.utc) + timedelta(days=7):
-            status["message"] = "Токен истекает скоро"
+        elif expires_at < now + timedelta(days=7):
+            status["message"] = f"Истекает {expires_at.strftime('%d.%m.%Y')}"
             status["color"] = "orange"
 
     if not account.encrypted_access_token:
