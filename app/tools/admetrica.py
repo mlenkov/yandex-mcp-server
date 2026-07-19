@@ -14,8 +14,7 @@ async def get_admetrica_campaigns(
     account_id: Optional[int] = None,
     limit: int = 100,
 ) -> dict:
-    """
-    Получить список рекламных кампаний в Яндекс.AdMetrica.
+    """Получить список рекламных кампаний в Яндекс.AdMetrica.
 
     КОГДА ИСПОЛЬЗОВАТЬ:
     - Пользователь спрашивает "покажи мои кампании в AdMetrica"

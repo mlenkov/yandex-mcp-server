@@ -7,8 +7,7 @@ from app.services.account_service import account_service
 
 
 async def list_yandex_accounts(ctx: Context) -> list[dict]:
-    """
-    Получить список всех настроенных Yandex-аккаунтов текущего пользователя.
+    """Получить список всех настроенных Yandex-аккаунтов текущего пользователя.
 
     КОГДА ИСПОЛЬЗОВАТЬ:
     - Всегда вызывай ПЕРВЫМ, чтобы узнать доступные account_id и service_type
