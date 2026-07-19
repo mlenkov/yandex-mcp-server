@@ -1,7 +1,6 @@
-"""Async wrapper around apiforge that integrates with Yandex OAuth tokens."""
-
 from __future__ import annotations
 
+from datetime import datetime
 from pathlib import Path
 from typing import Any, Optional
 
@@ -19,7 +18,6 @@ CONFIGS_DIR = Path(__file__).parent / "yandex_configs"
 
 
 def _make_token_hook(token: str) -> Any:
-    """Return a closure that injects an OAuth token into every request."""
     async def inject_token(**kwargs: Any) -> tuple[dict, dict]:
         params = kwargs.get("params") or {}
         headers = kwargs.get("headers") or {}
@@ -29,37 +27,36 @@ def _make_token_hook(token: str) -> Any:
 
 
 class AsyncYandexClient:
-    """Async HTTP client for a single Yandex service, backed by apiforge.
-
-    Automatically refreshes the OAuth token on 401 and retries once.
-
-    Usage:
-        client = AsyncYandexClient(ServiceType.direct, account_id=42)
-        data = await client.request("campaigns", {"SelectionCriteria": {}})
-    """
-
     def __init__(
         self,
         service_type: ServiceType,
         account_id: int,
+        ctx: Any = None,
         timeout: float = 30.0,
     ) -> None:
         self.service_type = service_type
         self.account_id = account_id
+        self.ctx = ctx
         self.timeout = timeout
         self._client: Optional[AsyncApiForgeClient] = None
         self._refreshed = False
 
     async def _ensure_client(self) -> AsyncApiForgeClient:
-        remaining = await account_service.get_token_expires_remaining(self.account_id)
-        if remaining < 300:
-            await account_service.refresh_account_token(self.account_id)
-
         if self._client is not None:
             return self._client
 
+        token, expires_at = await account_service.get_account_token_with_expiry(
+            self.account_id
+        )
+
+        if expires_at and (expires_at - datetime.utcnow()).total_seconds() < 300:
+            if self.ctx:
+                await self.ctx.warning(
+                    f"Token for account {self.account_id} expires soon, refreshing proactively..."
+                )
+            token = await account_service.refresh_account_token(self.account_id)
+
         config_path = str(CONFIGS_DIR / f"{self.service_type.value}.json")
-        token = await account_service.get_account_token(self.account_id)
         self._client = AsyncApiForgeClient(
             config_path=config_path,
             timeout=self.timeout,
@@ -76,6 +73,10 @@ class AsyncYandexClient:
     ) -> dict[str, Any]:
         client = await self._ensure_client()
         try:
+            if self.ctx:
+                await self.ctx.info(
+                    f"Calling {self.service_type.value}/{resource} for account {self.account_id}..."
+                )
             response = await client.request(
                 resource_name=resource,
                 params=params,
@@ -85,15 +86,26 @@ class AsyncYandexClient:
             return response.json()
         except ApiForgeAuthenticationError as e:
             if self._refreshed:
+                msg = f"Yandex API returned {e.status_code}: token refresh failed"
+                if self.ctx:
+                    await self.ctx.error(msg)
                 return {
                     "status": "error",
                     "yandex_api_error": True,
-                    "message": f"Yandex API returned {e.status_code}: token refresh failed",
+                    "message": msg,
                     "suggestion": "Re-authorize the Yandex account via OAuth.",
                 }
             self._refreshed = True
+            if self.ctx:
+                await self.ctx.warning(
+                    f"Token expired for account {self.account_id}, attempting refresh..."
+                )
             try:
                 new_token = await account_service.refresh_account_token(self.account_id)
+                if self.ctx:
+                    await self.ctx.info(
+                        f"Token for account {self.account_id} refreshed successfully, retrying..."
+                    )
             except Exception as refresh_err:
                 return {
                     "status": "error",
@@ -104,10 +116,13 @@ class AsyncYandexClient:
             self._client = None
             return await self.request(resource, params, data, **kwargs)
         except ApiForgeRateLimitError as e:
+            msg = f"Yandex API rate limit exceeded (retry after {e.retry_after}s)"
+            if self.ctx:
+                await self.ctx.warning(msg)
             return {
                 "status": "error",
                 "yandex_api_error": True,
-                "message": f"Yandex API rate limit exceeded (retry after {e.retry_after}s)",
+                "message": msg,
                 "suggestion": "Wait before making more requests.",
             }
         except ApiForgeRequestError as e:
@@ -116,10 +131,13 @@ class AsyncYandexClient:
                 hint = "Some parameters are invalid or missing."
             elif e.status_code == 429:
                 hint = "Rate limit hit. Reduce request frequency."
+            msg = f"Yandex API returned {e.status_code}: {e}"
+            if self.ctx:
+                await self.ctx.error(msg)
             return {
                 "status": "error",
                 "yandex_api_error": True,
-                "message": f"Yandex API returned {e.status_code}: {e}",
+                "message": msg,
                 "suggestion": hint,
             }
 

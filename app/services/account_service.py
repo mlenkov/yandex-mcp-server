@@ -66,6 +66,11 @@ class AccountService:
         account = await self.get_account(account_id)
         return crypto.decrypt(account.encrypted_access_token)
 
+    async def get_account_token_with_expiry(self, account_id: int) -> tuple[str, Optional[datetime]]:
+        account = await self.get_account(account_id)
+        token = crypto.decrypt(account.encrypted_access_token)
+        return token, account.token_expires_at
+
     async def get_token_expires_remaining(self, account_id: int) -> float:
         account = await self.get_account(account_id)
         if account.token_expires_at is None:
