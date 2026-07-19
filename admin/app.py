@@ -72,8 +72,7 @@ async def dashboard(request: Request):
             select(MCPYandexAccount).where(MCPYandexAccount.user_id == user.id)
         )
         integrations = result.scalars().all()
-    return templates.TemplateResponse("dashboard.html", {
-        "request": request,
+    return templates.TemplateResponse(request, "dashboard.html", {
         "user_email": email,
         "integrations": integrations,
         "token_status": _token_status,
@@ -90,8 +89,7 @@ async def integrations_list(request: Request):
             select(MCPYandexAccount).where(MCPYandexAccount.user_id == user.id)
         )
         integrations = result.scalars().all()
-    return templates.TemplateResponse("dashboard.html", {
-        "request": request,
+    return templates.TemplateResponse(request, "dashboard.html", {
         "user_email": email,
         "integrations": integrations,
         "token_status": _token_status,
@@ -101,8 +99,7 @@ async def integrations_list(request: Request):
 
 @app.get("/admin/integrations/add", response_class=HTMLResponse)
 async def add_integration_page(request: Request):
-    return templates.TemplateResponse("add_integration.html", {
-        "request": request,
+    return templates.TemplateResponse(request, "add_integration.html", {
         "services": [
             {"type": st.value, "label": SERVICE_LABELS[st]}
             for st in ServiceType
@@ -116,7 +113,7 @@ async def oauth_start(service: str, request: Request):
     scope = SERVICE_SCOPES[service_type]
     state = crypto.fernet.encrypt(f"{service}:{_user_email(request)}".encode()).decode()
     oauth_url = (
-        f"https://oauth.yandex.ru/authorize?"
+        f"https://oauth.yandex.com/authorize?"
         f"response_type=code&"
         f"client_id={settings.yandex_client_id}&"
         f"redirect_uri=https://app.mais.agency/admin/oauth/callback&"
@@ -142,7 +139,7 @@ async def oauth_callback(code: str = Query(...), state: str = Query(...), reques
         return HTMLResponse("Invalid state", status_code=403)
     service_type = ServiceType(service_str)
     async with httpx.AsyncClient() as client:
-        resp = await client.post("https://oauth.yandex.ru/token", data={
+        resp = await client.post("https://oauth.yandex.com/token", data={
             "grant_type": "authorization_code",
             "code": code,
             "client_id": settings.yandex_client_id,
@@ -155,7 +152,7 @@ async def oauth_callback(code: str = Query(...), state: str = Query(...), reques
     expires_in = token_data.get("expires_in", 3600)
     async with httpx.AsyncClient() as client:
         user_resp = await client.get(
-            "https://login.yandex.ru/info",
+            "https://login.yandex.com/info",
             headers={"Authorization": f"OAuth {access_token}"},
         )
         user_resp.raise_for_status()
