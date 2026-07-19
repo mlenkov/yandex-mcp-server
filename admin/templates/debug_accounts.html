@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Диагностика API Яндекса</h1>
+
+<h2>Основной логин: {{ main_login }}</h2>
+
+<h2>Сырой ответ от API Директа:</h2>
+<pre style="background: #f4f4f4; padding: 1em; overflow-x: auto; font-size: 13px;">
+{{ raw_response | tojson(indent=2) }}
+</pre>
+
+<h2>Обработанные аккаунты:</h2>
+<pre style="background: #e8f5e8; padding: 1em; font-size: 13px;">
+{{ accounts | tojson(indent=2) }}
+</pre>
+
+<p>
+    <a href="/admin/oauth/select-accounts" class="btn">Вернуться к выбору</a>
+    <a href="/admin/oauth/select-accounts?debug=1" class="btn">Обновить</a>
+</p>
+{% endblock %}

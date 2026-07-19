@@ -19,7 +19,7 @@ logger = logging.getLogger("yandex-admin")
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(name)s] %(levelname)s: %(message)s")
 
 SERVICE_SCOPES = {
-    ServiceType.direct: "direct:api",
+    ServiceType.direct: "direct:api direct:agency direct:oper",
     ServiceType.metrika: "metrika:read",
     ServiceType.webmaster: "webmaster:api",
     ServiceType.audience: "audience:api",
@@ -69,26 +69,43 @@ def _token_status(expires_at: datetime | None) -> str:
     return "valid"
 
 
-async def _fetch_available_accounts(service_type: ServiceType, access_token: str) -> list[dict]:
-    """Получить список доступных аккаунтов через API Яндекса после OAuth."""
+async def _fetch_available_accounts(service_type: ServiceType, access_token: str) -> tuple[list[dict], dict]:
+    """Возвращает (accounts, raw_response)."""
     async with httpx.AsyncClient() as client:
         if service_type == ServiceType.direct:
             resp = await client.post(
                 "https://api.direct.yandex.com/json/v5/clients",
                 headers={
                     "Authorization": f"Bearer {access_token}",
+                    "Accept-Language": "ru",
                     "Content-Type": "application/json; charset=utf-8",
                 },
-                json={"method": "get", "params": {"SelectionCriteria": {}, "FieldNames": ["Login"]}},
+                json={
+                    "method": "get",
+                    "params": {
+                        "SelectionCriteria": {},
+                        "FieldNames": ["Login", "Type", "Status", "ClientId"],
+                    },
+                },
                 timeout=10,
             )
+            raw_data = resp.json() if resp.status_code == 200 else {"error": resp.text, "status": resp.status_code}
+
             if resp.status_code == 200:
-                clients = resp.json().get("result", {}).get("Clients", [])
-                if clients:
-                    account_name = clients[0].get("Login", "Direct Account")
-                else:
-                    account_name = "Direct Account"
-                return [{"login": account_name, "type": "CLIENT", "source": "Текущий аккаунт"}]
+                clients = raw_data.get("result", {}).get("Clients", [])
+                accounts = [
+                    {
+                        "login": c.get("Login", "unknown"),
+                        "type": c.get("Type", "CLIENT"),
+                        "status": c.get("Status", ""),
+                        "client_id": c.get("ClientId"),
+                        "source": "Текущий аккаунт" if c.get("Type") == "CLIENT" else "Подопечный логин",
+                    }
+                    for c in clients
+                ]
+                return accounts, raw_data
+
+            return [], raw_data
 
         elif service_type == ServiceType.metrika:
             resp = await client.get(
@@ -96,14 +113,17 @@ async def _fetch_available_accounts(service_type: ServiceType, access_token: str
                 headers={"Authorization": f"OAuth {access_token}"},
                 timeout=10,
             )
+            raw_data = resp.json() if resp.status_code == 200 else {"error": resp.text, "status": resp.status_code}
             if resp.status_code == 200:
-                data = resp.json()
+                counters = raw_data.get("counters", [])
                 return [
                     {"id": c.get("id"), "name": c.get("name"), "site": c.get("site")}
-                    for c in data.get("counters", [])
-                ]
+                    for c in counters
+                ], raw_data
 
-        return []
+            return [], raw_data
+
+        return [], {}
 
 
 async def _check_account_status(account: MCPYandexAccount) -> dict:
@@ -343,13 +363,14 @@ async def oauth_callback(
 
     access_token = token_data["access_token"]
 
-    accounts = await _fetch_available_accounts(service_type, access_token)
+    accounts, raw_response = await _fetch_available_accounts(service_type, access_token)
 
     temp_data = {
         "access_token": access_token,
         "refresh_token": token_data.get("refresh_token"),
         "expires_in": token_data.get("expires_in", 3600),
         "accounts": accounts,
+        "raw_api_response": raw_response,
         "service": service_str,
     }
 
@@ -361,7 +382,7 @@ async def oauth_callback(
 
 
 @app.get("/admin/oauth/select-accounts", response_class=HTMLResponse)
-async def select_accounts_page(request: Request):
+async def select_accounts_page(request: Request, debug: bool = False):
     temp_cookie = request.cookies.get("oauth_temp")
     if not temp_cookie:
         return RedirectResponse("/admin/")
@@ -372,11 +393,33 @@ async def select_accounts_page(request: Request):
     except Exception:
         return RedirectResponse("/admin/")
 
+    main_login = "unknown"
+    try:
+        async with httpx.AsyncClient() as client:
+            user_resp = await client.get(
+                "https://login.yandex.com/info",
+                headers={"Authorization": f"OAuth {temp_data['access_token']}"},
+            )
+            if user_resp.status_code == 200:
+                yandex_user = user_resp.json()
+                main_login = yandex_user.get("login", "unknown")
+    except Exception:
+        pass
+
+    if debug:
+        return templates.TemplateResponse(request, "debug_accounts.html", {
+            "user_email": _user_email(request),
+            "raw_response": temp_data.get("raw_api_response", "No data"),
+            "accounts": temp_data.get("accounts", []),
+            "main_login": main_login,
+        })
+
     return templates.TemplateResponse(request, "select_accounts.html", {
         "user_email": _user_email(request),
+        "main_login": main_login,
+        "accounts": temp_data.get("accounts", []),
         "service": temp_data["service"],
         "service_label": SERVICE_LABELS[ServiceType(temp_data["service"])],
-        "accounts": temp_data["accounts"],
     })
 
 
