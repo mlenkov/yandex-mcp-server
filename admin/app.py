@@ -79,18 +79,6 @@ async def _fetch_available_accounts(service_type: ServiceType, access_token: str
     4. Возвращаем объединённый список
     """
     async with httpx.AsyncClient() as client:
-        main_login = "unknown"
-        try:
-            user_resp = await client.get(
-                "https://login.yandex.com/info?format=json",
-                headers={"Authorization": f"OAuth {access_token}"},
-            )
-            if user_resp.status_code == 200:
-                yandex_user = user_resp.json()
-                main_login = yandex_user.get("login", "unknown")
-        except Exception:
-            pass
-
         if service_type == ServiceType.direct:
             accounts = []
             agency_data = {}
@@ -138,7 +126,6 @@ async def _fetch_available_accounts(service_type: ServiceType, access_token: str
                 json={
                     "method": "get",
                     "params": {
-                        "SelectionCriteria": {},
                         "FieldNames": ["Login", "ClientId", "Role", "ClientStatus", "Type"],
                     },
                 },
@@ -158,6 +145,10 @@ async def _fetch_available_accounts(service_type: ServiceType, access_token: str
                             "source": "Текущий аккаунт",
                             "is_main": True,
                         })
+
+            main_login = "unknown"
+            if my_data and my_data.get("result", {}).get("Clients"):
+                main_login = my_data["result"]["Clients"][0].get("Login", "unknown")
 
             if not accounts:
                 accounts.append({
@@ -236,7 +227,7 @@ async def _check_account_status(account: MCPYandexAccount) -> dict:
                     },
                     json={
                         "method": "get",
-                        "params": {"SelectionCriteria": {}, "FieldNames": ["Login"]},
+                        "params": {"FieldNames": ["Login"]},
                     },
                     timeout=5.0,
                 )
@@ -462,18 +453,7 @@ async def select_accounts_page(request: Request, debug: bool = False):
     except Exception:
         return RedirectResponse("/admin/")
 
-    main_login = "unknown"
-    try:
-        async with httpx.AsyncClient() as client:
-            user_resp = await client.get(
-                "https://login.yandex.com/info",
-                headers={"Authorization": f"OAuth {temp_data['access_token']}"},
-            )
-            if user_resp.status_code == 200:
-                yandex_user = user_resp.json()
-                main_login = yandex_user.get("login", "unknown")
-    except Exception:
-        pass
+    main_login = temp_data.get("raw_api_response", {}).get("main_login", _user_email(request))
 
     if debug:
         return templates.TemplateResponse(request, "debug_accounts.html", {
