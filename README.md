@@ -9,30 +9,6 @@ MCP-сервер для API Яндекса: Direct, Metrika, Audience, Webmaster
 
 **Архитектура:** FastMCP + apiforge async + SQLAlchemy (Dual DB: SQLite/MySQL) + FastAPI Admin
 
-## 🏆 Why this is better than Atlas MCP
-
-> Сравнение основано на **фактических JSON-RPC запросах** к Atlas MCP (2026-07-19, одноразовый токен).
-> Полный анализ Atlas: [docs/atlas-mcp-connection.md](docs/atlas-mcp-connection.md).
-
-| Фича | Atlas MCP | Yandex MCP Server (Ours) |
-|---|---|---|
-| **Архитектура** | Generic source tool (1 на платформу) + action parameter | **Отдельный tool на каждую операцию** с точными required/optional полями |
-| **MCP Resources** | ❌ Нет. Документация через `documentation_get` | ✅ **5 нативных** (`yandex://direct/docs`, `yandex://metrika/docs`...) |
-| **MCP Prompts** | ❌ Нет | ✅ **3 нативных** с типизированными аргументами |
-| **Контекст аккаунта** | `project_context` (read-only) | ✅ **Read + Write** (`get_account_context`/`update_account_context`) |
-| **Token Refresh** | По факту 401 | ✅ **Proactive** — за 5 мин до истечения |
-| **Rate Limiting** | Не обнаружено | ✅ **30 req/min per user/per tool** |
-| **Обработка ошибок** | Structured JSON (`validation_error`) | ✅ Structured JSON (`yandex_api_error`, `suggestion`, `retry_hint`) |
-| **LLM docstrings** | Generic: "Read Yandex Direct data" | ✅ **Rich**: КОГДА ИСПОЛЬЗОВАТЬ / ПАРАМЕТРЫ / ВОЗВРАЩАЕТ / ПРИМЕР |
-| **Write-операции** | ❌ Read-only | ✅ Update account context |
-| **Yandex-покрытие** | Direct, Metrika, Webmaster, AppMetrica, Yandex Market | ✅ **Direct + Metrika + Webmaster + Audience + AdMetrica** |
-| **Не-Яндекс** | ✅ Bitrix24, amoCRM, Avito, Ozon, VK, Wildberries (18+) | ❌ Только Яндекс |
-| **Transport** | Streamable HTTP | ✅ Streamable HTTP (Docker-ready, Caddy reverse proxy) |
-
-**Bottom line:** Atlas MCP выигрывает широтой (18+ платформ). Мы выигрываем **глубиной Yandex-экспертизы**: нативные Resources/Prompts, точные инструменты, proactive refresh, rate limiting, двусторонний контекст аккаунта.
-
-> Все артефакты подтверждены фактическими JSON-RPC дампами (см. [Benchmark](#benchmark)).
-
 ## Быстрый старт (локально, SQLite)
 
 ```bash
@@ -224,8 +200,6 @@ npx @modelcontextprotocol/inspector
 
 ## Benchmark
 
-> Фактические JSON-RPC дампы, доказывающие превосходство над Atlas MCP.
->
 > Подключение: `POST http://localhost:8000/mcp` (Streamable HTTP, `Accept: application/json, text/event-stream`)
 
 ### 1. ListTools → `get_direct_stats_tool` (inputSchema + description)
@@ -391,7 +365,6 @@ admin/
 ├── templates/              # Jinja2 HTML шаблоны
 └── static/                 # CSS
 docs/                       # Документация и JSON-RPC дампы
-├── atlas-mcp-connection.md
 ├── yandex-mcp-connection.md
 ├── yandex-tools-dump.json
 ├── yandex-resources-dump.json
