@@ -95,7 +95,6 @@ async def _fetch_available_accounts(service_type: ServiceType, access_token: str
                 json={
                     "method": "get",
                     "params": {
-                        "SelectionCriteria": {},
                         "FieldNames": ["Login", "ClientId", "Type", "ManagedLogins"],
                     },
                 },
@@ -432,7 +431,6 @@ async def oauth_callback(
         "refresh_token": token_data.get("refresh_token"),
         "expires_in": token_data.get("expires_in", 3600),
         "accounts": accounts,
-        "raw_api_response": raw_response,
         "service": service_str,
     }
 
@@ -455,20 +453,33 @@ async def select_accounts_page(request: Request, debug: bool = False):
     except Exception:
         return RedirectResponse("/admin/")
 
-    main_login = temp_data.get("raw_api_response", {}).get("main_login", _user_email(request))
+    accounts = temp_data.get("accounts", [])
+    main_login = _user_email(request)
+    for a in accounts:
+        if a.get("is_main"):
+            main_login = a.get("login", main_login)
+            break
 
     if debug:
+        raw_response = {}
+        try:
+            r, raw_response = await _fetch_available_accounts(
+                ServiceType(temp_data["service"]),
+                temp_data["access_token"],
+            )
+        except Exception:
+            pass
         return templates.TemplateResponse(request, "debug_accounts.html", {
             "user_email": _user_email(request),
-            "raw_response": temp_data.get("raw_api_response", "No data"),
-            "accounts": temp_data.get("accounts", []),
+            "raw_response": raw_response,
+            "accounts": accounts,
             "main_login": main_login,
         })
 
     return templates.TemplateResponse(request, "select_accounts.html", {
         "user_email": _user_email(request),
         "main_login": main_login,
-        "accounts": temp_data.get("accounts", []),
+        "accounts": accounts,
         "service": temp_data["service"],
         "service_label": SERVICE_LABELS[ServiceType(temp_data["service"])],
     })
