@@ -83,6 +83,7 @@ async def _fetch_available_accounts(service_type: ServiceType, access_token: str
             accounts = []
             agency_data = {}
             my_data = {}
+            main_login = "unknown"
 
             agency_resp = await client.post(
                 "https://api.direct.yandex.com/json/v5/agencyclients",
@@ -126,7 +127,7 @@ async def _fetch_available_accounts(service_type: ServiceType, access_token: str
                 json={
                     "method": "get",
                     "params": {
-                        "FieldNames": ["Login", "ClientId", "Role", "ClientStatus", "Type"],
+                        "FieldNames": ["Login", "ClientId", "Type", "Subtype"],
                     },
                 },
             )
@@ -140,15 +141,13 @@ async def _fetch_available_accounts(service_type: ServiceType, access_token: str
                         accounts.insert(0, {
                             "login": login,
                             "client_id": c.get("ClientId"),
-                            "role": c.get("Role", "CHIEF"),
-                            "status": c.get("ClientStatus", ""),
+                            "role": "CHIEF",
+                            "status": c.get("Type", "CLIENT"),
                             "source": "Текущий аккаунт",
                             "is_main": True,
                         })
-
-            main_login = "unknown"
-            if my_data and my_data.get("result", {}).get("Clients"):
-                main_login = my_data["result"]["Clients"][0].get("Login", "unknown")
+                if my_clients:
+                    main_login = my_clients[0].get("Login", "unknown")
 
             if not accounts:
                 accounts.append({
@@ -637,3 +636,64 @@ async def delete_integration(account_id: int, request: Request):
 @app.get("/admin/ping")
 async def ping():
     return {"status": "ok", "service": "yandex-admin"}
+
+
+@app.get("/admin/diagnose", response_class=HTMLResponse)
+async def diagnose(request: Request):
+    temp_cookie = request.cookies.get("oauth_temp")
+    if not temp_cookie:
+        return HTMLResponse("""
+        <h1>Нет OAuth-сессии</h1>
+        <p>Сначала пройдите OAuth: <a href='/admin/integrations/direct'>откройте Директ</a>,
+        нажмите '+ Добавить аккаунт' → 'Войти через Яндекс'.</p>
+        """)
+
+    try:
+        decrypted = crypto.decrypt(temp_cookie)
+        temp_data = json.loads(decrypted)
+        access_token = temp_data.get("access_token", "")
+    except Exception as e:
+        return HTMLResponse(f"<h1>Ошибка расшифровки</h1><pre>{e}</pre>")
+
+    results = []
+
+    headers = {
+        "Authorization": f"Bearer {access_token}",
+        "Content-Type": "application/json; charset=utf-8",
+        "Accept-Language": "ru",
+    }
+
+    async with httpx.AsyncClient() as client:
+        test_cases = {
+            "clients/get c Login,ClientId,ManagedLogins": {
+                "method": "get",
+                "params": {"FieldNames": ["Login", "ClientId", "ManagedLogins"]},
+            },
+            "clients/get c ClientId,Login,Type,Subtype": {
+                "method": "get",
+                "params": {"FieldNames": ["ClientId", "Login", "Type", "Subtype"]},
+            },
+            "agencyclients/get c ClientId,Login,Role": {
+                "method": "get",
+                "params": {
+                    "SelectionCriteria": {},
+                    "FieldNames": ["ClientId", "Login", "Role"],
+                    "Page": {"Limit": 10000},
+                },
+                "url": "https://api.direct.yandex.com/json/v5/agencyclients",
+            },
+        }
+
+        for label, params in test_cases.items():
+            url = params.pop("url", "https://api.direct.yandex.com/json/v5/clients")
+            resp = await client.post(url, headers=headers, json=params, timeout=10)
+            data = resp.json() if resp.status_code == 200 else {"http_status": resp.status_code, "body": resp.text[:500]}
+            results.append({"label": label, "status": resp.status_code, "data": data})
+
+    html = "<h1>Диагностика Direct API</h1>"
+    for r in results:
+        html += f"<h2>{r['label']} — {r['status']}</h2>"
+        html += f"<pre style='background:#f4f4f4;padding:1em;overflow:auto;font-size:13px;'>{json.dumps(r['data'], indent=2, ensure_ascii=False)}</pre>"
+
+    html += "<p><a href='/admin/' class='btn'>На главную</a></p>"
+    return HTMLResponse(f"<!DOCTYPE html><html><head><meta charset='utf-8'></head><body>{html}</body></html>")
