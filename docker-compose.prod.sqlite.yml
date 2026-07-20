@@ -15,6 +15,7 @@ services:
       - ./app/yandex_configs:/app/app/yandex_configs:ro
     networks:
       - mais-bifrost-net
+      - mais-app-net
     labels:
       project: "mais"
       service: "yandex-mcp"
@@ -38,6 +39,7 @@ services:
       - yandex-mcp-data:/app/data
     networks:
       - mais-bifrost-net
+      - mais-app-net
     labels:
       project: "mais"
       service: "yandex-admin"
@@ -56,3 +58,6 @@ networks:
   mais-bifrost-net:
     external: true
     name: mais-bifrost-net
+  mais-app-net:
+    external: true
+    name: mais-app-net
