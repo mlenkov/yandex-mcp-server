@@ -628,7 +628,7 @@ async def update_account(
     return RedirectResponse(f"/admin/integrations/{service}", status_code=303)
 
 
-@app.post("/admin/integrations/{account_id}/delete")
+@app.api_route("/admin/integrations/{account_id}/delete", methods=["GET", "POST"])
 async def delete_integration(account_id: int, request: Request):
     user_email = _user_email(request)
     user = await _get_or_create_user(user_email)
