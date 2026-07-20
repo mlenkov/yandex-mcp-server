@@ -19,7 +19,7 @@ logger = logging.getLogger("yandex-admin")
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(name)s] %(levelname)s: %(message)s")
 
 SERVICE_SCOPES = {
-    ServiceType.direct: "direct:api direct:agency direct:oper",
+    ServiceType.direct: "direct:api",
     ServiceType.metrika: "metrika:read",
     ServiceType.webmaster: "webmaster:api",
     ServiceType.audience: "audience:api",
@@ -70,7 +70,11 @@ def _token_status(expires_at: datetime | None) -> str:
 
 
 async def _fetch_available_accounts(service_type: ServiceType, access_token: str) -> tuple[list[dict], dict]:
-    """Возвращает (accounts, raw_response)."""
+    """Возвращает (accounts, raw_response).
+
+    Важно: Для обычного рекламодателя API вернёт только один аккаунт.
+    Для агентства вернёт список всех подопечных аккаунтов.
+    """
     async with httpx.AsyncClient() as client:
         if service_type == ServiceType.direct:
             resp = await client.post(

@@ -44,10 +44,11 @@
 <div class="info-box" style="margin-top: 32px; padding: 16px; background: #f0f7ff; border: 1px solid #b8d4f0; border-radius: 8px;">
     <h3>Почему я вижу только один аккаунт?</h3>
     <ul>
-        <li><strong>Обычный рекламодатель:</strong> Видит только свой аккаунт. Чтобы управлять несколькими, нужно агентство.</li>
-        <li><strong>Агентство:</strong> Должно видеть всех подопечных. Если не видите — проверьте, что в OAuth-приложении включены scope'ы <code>direct:agency</code> и <code>direct:oper</code>.</li>
+        <li><strong>Обычный рекламодатель:</strong> Вы видите только свой аккаунт. Это нормально, если вы не агентство.</li>
+        <li><strong>Агентство:</strong> Чтобы видеть несколько аккаунтов, вам нужно быть агентством в Яндекс.Директе.</li>
         <li><strong>Проверьте:</strong> Зайдите на <a href="https://direct.yandex.ru" target="_blank">direct.yandex.ru</a> под этим логином — сколько аккаунтов вы видите там?</li>
     </ul>
+    <p>Если вы видите только один аккаунт в Яндекс.Директе, значит, вы обычный рекламодатель, и API вернёт только один аккаунт.</p>
     <p><a href="/admin/oauth/select-accounts?debug=1" class="btn btn-sm">Диагностика API</a></p>
 </div>
 

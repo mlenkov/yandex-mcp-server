@@ -4,6 +4,15 @@
 
 <h2>Основной логин: {{ main_login }}</h2>
 
+<h2>Тип аккаунта:</h2>
+<p>
+    {% if raw_response.get("result", {}).get("Clients", [])|length == 1 %}
+        Обычный рекламодатель (видит только свой аккаунт)
+    {% else %}
+        Агентство (видит несколько аккаунтов)
+    {% endif %}
+</p>
+
 <h2>Сырой ответ от API Директа:</h2>
 <pre style="background: #f4f4f4; padding: 1em; overflow-x: auto; font-size: 13px;">
 {{ raw_response | tojson(indent=2) }}
