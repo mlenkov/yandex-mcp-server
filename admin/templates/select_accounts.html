@@ -1,25 +1,25 @@
 {% extends "base.html" %}
 {% block content %}
-<h1>Выбор аккаунтов {{ service_label }}</h1>
-<p class="service-desc">Выберите аккаунты, которые нужно подключить для работы с {{ service_label }}.</p>
+<h1>Выбор аккаунтов Яндекс.Директа</h1>
+<p>Вы вошли как <strong>{{ main_login }}</strong>. Выберите аккаунты, которые нужно подключить.</p>
 
 <form method="POST" action="/admin/oauth/save-accounts">
     {% if accounts %}
     <div class="account-grid" style="margin: 24px 0;">
         {% for acc in accounts %}
-        <div class="account-card selectable">
+        <div class="account-card selectable" style="border-left: 4px solid {% if acc.is_main %}#2196F3{% else %}#4CAF50{% endif %};">
             <label>
-                <input type="checkbox" name="selected_accounts" value="{{ acc.login }}" class="account-checkbox">
+                <input type="checkbox" name="selected_logins" value="{{ acc.login }}" class="account-checkbox">
                 <div class="account-card-body">
                     <strong>{{ acc.login }}</strong>
-                    <span class="badge">{{ acc.type }}</span>
+                    <span class="badge">{{ acc.role }}</span>
                     <br>
                     <small>Источник: {{ acc.source }}</small><br>
-                    {% if acc.status %}
-                    <small>Статус: {{ acc.status }}</small><br>
-                    {% endif %}
                     {% if acc.client_id %}
-                    <small>Client ID: {{ acc.client_id }}</small>
+                    <small>Client ID: {{ acc.client_id }}</small><br>
+                    {% endif %}
+                    {% if acc.status %}
+                    <small>Статус: {{ acc.status }}</small>
                     {% endif %}
                 </div>
             </label>
@@ -45,17 +45,16 @@
     <h3>Почему я вижу только один аккаунт?</h3>
     <ul>
         <li><strong>Обычный рекламодатель:</strong> Вы видите только свой аккаунт. Это нормально, если вы не агентство.</li>
-        <li><strong>Агентство:</strong> Чтобы видеть несколько аккаунтов, вам нужно быть агентством в Яндекс.Директе.</li>
+        <li><strong>Агентство:</strong> Должно видеть список подопечных. Если не видите — проверьте, что OAuth-приложение имеет доступ к API.</li>
         <li><strong>Проверьте:</strong> Зайдите на <a href="https://direct.yandex.ru" target="_blank">direct.yandex.ru</a> под этим логином — сколько аккаунтов вы видите там?</li>
     </ul>
-    <p>Если вы видите только один аккаунт в Яндекс.Директе, значит, вы обычный рекламодатель, и API вернёт только один аккаунт.</p>
     <p><a href="/admin/oauth/select-accounts?debug=1" class="btn btn-sm">Диагностика API</a></p>
 </div>
 
 <script>
-document.querySelectorAll('input[name="selected_accounts"]').forEach(function(cb) {
+document.querySelectorAll('input[name="selected_logins"]').forEach(function(cb) {
     cb.addEventListener('change', function() {
-        var count = document.querySelectorAll('input[name="selected_accounts"]:checked').length;
+        var count = document.querySelectorAll('input[name="selected_logins"]:checked').length;
         document.getElementById('selected-count').textContent = count;
     });
 });

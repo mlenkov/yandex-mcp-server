@@ -2,26 +2,31 @@
 {% block content %}
 <h1>Диагностика API Яндекса</h1>
 
-<h2>Основной логин: {{ main_login }}</h2>
+<h2>Основной логин: {{ raw_response.get('main_login', main_login) }}</h2>
 
-<h2>Тип аккаунта:</h2>
-<p>
-    {% if raw_response.get("result", {}).get("Clients", [])|length == 1 %}
-        Обычный рекламодатель (видит только свой аккаунт)
-    {% else %}
-        Агентство (видит несколько аккаунтов)
-    {% endif %}
-</p>
-
-<h2>Сырой ответ от API Директа:</h2>
+<h2>1. agencyclients response (подопечные):</h2>
 <pre style="background: #f4f4f4; padding: 1em; overflow-x: auto; font-size: 13px;">
-{{ raw_response | tojson(indent=2) }}
+{{ raw_response.get('agencyclients_response', {}) | tojson(indent=2) }}
 </pre>
 
-<h2>Обработанные аккаунты:</h2>
+<h2>2. clients response (свой аккаунт):</h2>
+<pre style="background: #fff8e1; padding: 1em; overflow-x: auto; font-size: 13px;">
+{{ raw_response.get('clients_response', {}) | tojson(indent=2) }}
+</pre>
+
+<h2>3. Обработанные аккаунты:</h2>
 <pre style="background: #e8f5e8; padding: 1em; font-size: 13px;">
 {{ accounts | tojson(indent=2) }}
 </pre>
+
+<div class="info-box" style="margin-top: 16px; padding: 16px; background: #f0f7ff; border: 1px solid #b8d4f0; border-radius: 8px;">
+    <h3>Как интерпретировать:</h3>
+    <ul>
+        <li><strong>agencyclients вернулся успешно</strong> → вы агентство, видите подопечных</li>
+        <li><strong>agencyclients вернул ошибку</strong> → вы обычный рекламодатель</li>
+        <li><strong>clients всегда</strong> → возвращает ваш собственный аккаунт</li>
+    </ul>
+</div>
 
 <p>
     <a href="/admin/oauth/select-accounts" class="btn">Вернуться к выбору</a>

@@ -72,12 +72,63 @@ def _token_status(expires_at: datetime | None) -> str:
 async def _fetch_available_accounts(service_type: ServiceType, access_token: str) -> tuple[list[dict], dict]:
     """Возвращает (accounts, raw_response).
 
-    Важно: Для обычного рекламодателя API вернёт только один аккаунт.
-    Для агентства вернёт список всех подопечных аккаунтов.
+    Алгоритм:
+    1. Получаем основной логин пользователя через login.yandex.com
+    2. Пробуем agencyclients (для агентств) — если успешно, добавляем подопечных
+    3. Всегда добавляем свой аккаунт через clients
+    4. Возвращаем объединённый список
     """
     async with httpx.AsyncClient() as client:
+        main_login = "unknown"
+        try:
+            user_resp = await client.get(
+                "https://login.yandex.com/info?format=json",
+                headers={"Authorization": f"OAuth {access_token}"},
+            )
+            if user_resp.status_code == 200:
+                yandex_user = user_resp.json()
+                main_login = yandex_user.get("login", "unknown")
+        except Exception:
+            pass
+
         if service_type == ServiceType.direct:
-            resp = await client.post(
+            accounts = []
+            agency_data = {}
+            my_data = {}
+
+            agency_resp = await client.post(
+                "https://api.direct.yandex.com/json/v5/agencyclients",
+                headers={
+                    "Authorization": f"Bearer {access_token}",
+                    "Accept-Language": "ru",
+                    "Content-Type": "application/json; charset=utf-8",
+                },
+                json={
+                    "method": "get",
+                    "params": {
+                        "SelectionCriteria": {},
+                        "FieldNames": ["ClientId", "Login", "ClientStatus", "Role", "Type"],
+                        "Page": {"Limit": 10000},
+                    },
+                },
+            )
+
+            if agency_resp.status_code == 200:
+                agency_data = agency_resp.json()
+                sub_clients = agency_data.get("result", {}).get("Clients", [])
+                for c in sub_clients:
+                    accounts.append({
+                        "login": c.get("Login", "unknown"),
+                        "client_id": c.get("ClientId"),
+                        "role": c.get("Role", "CLIENT"),
+                        "status": c.get("ClientStatus", ""),
+                        "source": "Подопечный логин" if c.get("Role") != "CHIEF" else "Текущий аккаунт",
+                        "is_main": False,
+                    })
+            elif agency_resp.status_code in (401, 403, 500):
+                agency_data = {"error": agency_resp.text, "status": agency_resp.status_code}
+
+            my_resp = await client.post(
                 "https://api.direct.yandex.com/json/v5/clients",
                 headers={
                     "Authorization": f"Bearer {access_token}",
@@ -88,28 +139,42 @@ async def _fetch_available_accounts(service_type: ServiceType, access_token: str
                     "method": "get",
                     "params": {
                         "SelectionCriteria": {},
-                        "FieldNames": ["Login", "Type", "Status", "ClientId"],
+                        "FieldNames": ["Login", "ClientId", "Role", "ClientStatus", "Type"],
                     },
                 },
-                timeout=10,
             )
-            raw_data = resp.json() if resp.status_code == 200 else {"error": resp.text, "status": resp.status_code}
 
-            if resp.status_code == 200:
-                clients = raw_data.get("result", {}).get("Clients", [])
-                accounts = [
-                    {
-                        "login": c.get("Login", "unknown"),
-                        "type": c.get("Type", "CLIENT"),
-                        "status": c.get("Status", ""),
-                        "client_id": c.get("ClientId"),
-                        "source": "Текущий аккаунт" if c.get("Type") == "CLIENT" else "Подопечный логин",
-                    }
-                    for c in clients
-                ]
-                return accounts, raw_data
+            if my_resp.status_code == 200:
+                my_data = my_resp.json()
+                my_clients = my_data.get("result", {}).get("Clients", [])
+                for c in my_clients:
+                    login = c.get("Login", main_login)
+                    if not any(a["login"] == login for a in accounts):
+                        accounts.insert(0, {
+                            "login": login,
+                            "client_id": c.get("ClientId"),
+                            "role": c.get("Role", "CHIEF"),
+                            "status": c.get("ClientStatus", ""),
+                            "source": "Текущий аккаунт",
+                            "is_main": True,
+                        })
 
-            return [], raw_data
+            if not accounts:
+                accounts.append({
+                    "login": main_login,
+                    "client_id": None,
+                    "role": "UNKNOWN",
+                    "status": "",
+                    "source": "Текущий аккаунт",
+                    "is_main": True,
+                })
+
+            raw_data = {
+                "main_login": main_login,
+                "agencyclients_response": agency_data,
+                "clients_response": my_data,
+            }
+            return accounts, raw_data
 
         elif service_type == ServiceType.metrika:
             resp = await client.get(
@@ -430,7 +495,7 @@ async def select_accounts_page(request: Request, debug: bool = False):
 @app.post("/admin/oauth/save-accounts")
 async def save_accounts(
     request: Request,
-    selected_accounts: list[str] = Form([]),
+    selected_logins: list[str] = Form([]),
 ):
     temp_cookie = request.cookies.get("oauth_temp")
     if not temp_cookie:
@@ -450,7 +515,7 @@ async def save_accounts(
     refresh_token = temp_data.get("refresh_token")
     expires_at = datetime.now(timezone.utc) + timedelta(seconds=temp_data.get("expires_in", 3600))
 
-    for login in selected_accounts:
+    for login in selected_logins:
         async with async_session_factory() as session:
             account = MCPYandexAccount(
                 user_id=user.id,
