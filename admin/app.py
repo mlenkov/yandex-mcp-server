@@ -72,82 +72,80 @@ def _token_status(expires_at: datetime | None) -> str:
 async def _fetch_available_accounts(service_type: ServiceType, access_token: str) -> tuple[list[dict], dict]:
     """Возвращает (accounts, raw_response).
 
-    Алгоритм:
-    1. Получаем основной логин пользователя через login.yandex.com
-    2. Пробуем agencyclients (для агентств) — если успешно, добавляем подопечных
-    3. Всегда добавляем свой аккаунт через clients
-    4. Возвращаем объединённый список
+    Алгоритм для Direct:
+    1. clients/get с ManagedLogins — получаем свой аккаунт + список доступных логинов
+    2. Для каждого логина получаем ClientId через отдельный clients/get
     """
     async with httpx.AsyncClient() as client:
         if service_type == ServiceType.direct:
             accounts = []
-            agency_data = {}
-            my_data = {}
             main_login = "unknown"
+            raw_clients = {}
+            raw_managed = {}
 
-            agency_resp = await client.post(
-                "https://api.direct.yandex.com/json/v5/agencyclients",
-                headers={
-                    "Authorization": f"Bearer {access_token}",
-                    "Accept-Language": "ru",
-                    "Content-Type": "application/json; charset=utf-8",
-                },
-                json={
-                    "method": "get",
-                    "params": {
-                        "SelectionCriteria": {},
-                        "FieldNames": ["ClientId", "Login", "ClientStatus", "Role", "Type"],
-                        "Page": {"Limit": 10000},
-                    },
-                },
-            )
+            common_headers = {
+                "Authorization": f"Bearer {access_token}",
+                "Accept-Language": "ru",
+                "Content-Type": "application/json; charset=utf-8",
+            }
 
-            if agency_resp.status_code == 200:
-                agency_data = agency_resp.json()
-                sub_clients = agency_data.get("result", {}).get("Clients", [])
-                for c in sub_clients:
-                    accounts.append({
-                        "login": c.get("Login", "unknown"),
-                        "client_id": c.get("ClientId"),
-                        "role": c.get("Role", "CLIENT"),
-                        "status": c.get("ClientStatus", ""),
-                        "source": "Подопечный логин" if c.get("Role") != "CHIEF" else "Текущий аккаунт",
-                        "is_main": False,
-                    })
-            elif agency_resp.status_code in (401, 403, 500):
-                agency_data = {"error": agency_resp.text, "status": agency_resp.status_code}
-
-            my_resp = await client.post(
+            main_resp = await client.post(
                 "https://api.direct.yandex.com/json/v5/clients",
-                headers={
-                    "Authorization": f"Bearer {access_token}",
-                    "Accept-Language": "ru",
-                    "Content-Type": "application/json; charset=utf-8",
-                },
+                headers=common_headers,
                 json={
                     "method": "get",
                     "params": {
-                        "FieldNames": ["Login", "ClientId", "Type", "Subtype"],
+                        "FieldNames": ["Login", "ClientId", "Type", "Subtype", "ManagedLogins"],
                     },
                 },
             )
 
-            if my_resp.status_code == 200:
-                my_data = my_resp.json()
-                my_clients = my_data.get("result", {}).get("Clients", [])
-                for c in my_clients:
-                    login = c.get("Login", main_login)
-                    if not any(a["login"] == login for a in accounts):
-                        accounts.insert(0, {
-                            "login": login,
-                            "client_id": c.get("ClientId"),
-                            "role": "CHIEF",
-                            "status": c.get("Type", "CLIENT"),
-                            "source": "Текущий аккаунт",
-                            "is_main": True,
-                        })
-                if my_clients:
-                    main_login = my_clients[0].get("Login", "unknown")
+            if main_resp.status_code == 200:
+                raw_clients = main_resp.json()
+                main_clients = raw_clients.get("result", {}).get("Clients", [])
+                for c in main_clients:
+                    login = c.get("Login", "unknown")
+                    main_login = login
+                    managed = c.get("ManagedLogins", [])
+
+                    accounts.append({
+                        "login": login,
+                        "client_id": c.get("ClientId"),
+                        "role": "CHIEF",
+                        "status": c.get("Type", "CLIENT"),
+                        "source": "Текущий аккаунт",
+                        "is_main": True,
+                    })
+
+                    for mlogin in managed:
+                        mresp = await client.post(
+                            "https://api.direct.yandex.com/json/v5/clients",
+                            headers={
+                                "Authorization": f"Bearer {access_token}",
+                                "Content-Type": "application/json; charset=utf-8",
+                            },
+                            json={
+                                "method": "get",
+                                "params": {
+                                    "SelectionCriteria": {"Logins": [mlogin]},
+                                    "FieldNames": ["Login", "ClientId", "Type"],
+                                },
+                            },
+                        )
+                        if mresp.status_code == 200:
+                            mdata = mresp.json()
+                            mclients = mdata.get("result", {}).get("Clients", [])
+                            for mc in mclients:
+                                if not any(a["login"] == mc.get("Login") for a in accounts):
+                                    accounts.append({
+                                        "login": mc.get("Login", mlogin),
+                                        "client_id": mc.get("ClientId"),
+                                        "role": "MANAGED",
+                                        "status": mc.get("Type", ""),
+                                        "source": "Представительство",
+                                        "is_main": False,
+                                    })
+                        raw_managed[mlogin] = mresp.json() if mresp.status_code == 200 else {"http_status": mresp.status_code}
 
             if not accounts:
                 accounts.append({
@@ -161,8 +159,8 @@ async def _fetch_available_accounts(service_type: ServiceType, access_token: str
 
             raw_data = {
                 "main_login": main_login,
-                "agencyclients_response": agency_data,
-                "clients_response": my_data,
+                "clients_response": raw_clients,
+                "managed_responses": raw_managed,
             }
             return accounts, raw_data
 
